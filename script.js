@@ -1,6 +1,8 @@
 // --- Core Data and Initialization ---
 let allPhrases = [];
 let speech;
+const favoritesKey = 'tarragonaFavorites';
+let favorites = new Set();
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeAllSections();
@@ -9,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     initializeButtons();
     initializeSearch();
+    updateFavoritesUI();
     
     // Check for speech synthesis support
     if ('speechSynthesis' in window) {
@@ -151,28 +154,11 @@ function initializeSearch() {
 
 // --- Favorites System ---
 
-// Manages the list of favorite phrases in local storage
-let favorites = new Set();
-const favoritesKey = 'tarragonaFavorites';
-
 function loadFavorites() {
     const storedFavorites = JSON.parse(localStorage.getItem(favoritesKey));
     if (storedFavorites) {
         favorites = new Set(storedFavorites);
     }
-    
-    // Initialize favorite buttons based on local storage
-    document.querySelectorAll('.phrase-card').forEach(card => {
-        const cardId = card.dataset.id;
-        const favoriteButton = card.querySelector('.favorite-button');
-        
-        if (favorites.has(cardId)) {
-            favoriteButton.classList.add('favorited');
-            favoriteButton.textContent = '⭐';
-        } else {
-            favoriteButton.textContent = '☆';
-        }
-    });
 }
 
 function saveFavorites() {
@@ -186,27 +172,12 @@ function toggleFavorite(event) {
     
     if (favorites.has(cardId)) {
         favorites.delete(cardId);
-        // Find and update all matching cards, including the cloned one
-        document.querySelectorAll(`.phrase-card[data-id="${cardId}"]`).forEach(match => {
-            const btn = match.querySelector('.favorite-button');
-            if (btn) {
-                btn.classList.remove('favorited');
-                btn.textContent = '☆';
-            }
-        });
     } else {
         favorites.add(cardId);
-        // Find and update all matching cards, including the cloned one
-        document.querySelectorAll(`.phrase-card[data-id="${cardId}"]`).forEach(match => {
-            const btn = match.querySelector('.favorite-button');
-            if (btn) {
-                btn.classList.add('favorited');
-                btn.textContent = '⭐';
-            }
-        });
     }
     
     saveFavorites();
+    updateFavoritesUI();
     
     // If we're on the favorites page, re-render to reflect the change
     if (document.getElementById('favorites').classList.contains('active')) {
@@ -214,9 +185,25 @@ function toggleFavorite(event) {
     }
 }
 
+function updateFavoritesUI() {
+    document.querySelectorAll('.phrase-card').forEach(card => {
+        const cardId = card.dataset.id;
+        const favoriteButton = card.querySelector('.favorite-button');
+        if (favoriteButton) {
+            if (favorites.has(cardId)) {
+                favoriteButton.classList.add('favorited');
+                favoriteButton.textContent = '⭐';
+            } else {
+                favoriteButton.classList.remove('favorited');
+                favoriteButton.textContent = '☆';
+            }
+        }
+    });
+}
+
 function renderFavorites() {
     const favoritesGrid = document.getElementById('favorites-grid');
-    favoritesGrid.innerHTML = ''; // Clear previous content
+    favoritesGrid.innerHTML = '';
     
     const noFavoritesMsg = document.getElementById('no-favorites');
     if (favorites.size === 0) {
@@ -226,20 +213,9 @@ function renderFavorites() {
         
         allPhrases.forEach(phrase => {
             if (favorites.has(phrase.id)) {
-                // Find the original card and clone it
                 const originalCard = document.querySelector(`.phrase-card[data-id="${phrase.id}"]`);
                 if (originalCard) {
                     const clonedCard = originalCard.cloneNode(true);
-                    
-                    // We must remove the data-id from the cloned card to avoid duplicates
-                    clonedCard.removeAttribute('data-id');
-                    
-                    const favoriteButton = clonedCard.querySelector('.favorite-button');
-                    if (favoriteButton) {
-                        favoriteButton.classList.add('favorited');
-                        favoriteButton.textContent = '⭐';
-                    }
-
                     favoritesGrid.appendChild(clonedCard);
                 }
             }
