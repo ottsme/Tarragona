@@ -33,8 +33,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeButtons() {
-    // Direct event listeners on buttons instead of delegation
-    // Wait a bit for all cards to be created
+    // Remove ALL existing event listeners first by cloning and replacing buttons
+    document.querySelectorAll('.favorite-button').forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    document.querySelectorAll('.audio-button').forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    // Now add fresh event listeners
     setTimeout(function() {
         document.querySelectorAll('.favorite-button').forEach(button => {
             button.addEventListener('click', function(e) {
@@ -80,7 +90,7 @@ function initializeButtons() {
                 speakCatalan(catalanText);
             });
         });
-    }, 500);
+    }, 100);
 }
 
 // --- UI and View Management ---
@@ -263,63 +273,57 @@ function renderFavorites() {
     // Get debug panel by ID
     const debugPanel = document.getElementById('debug-panel');
     if (debugPanel) {
-        debugPanel.innerHTML = 'renderFavorites() CALLED<br>';
-        debugPanel.innerHTML += 'Favorites size: ' + favorites.size + '<br>';
-        debugPanel.innerHTML += 'IDs: ' + Array.from(favorites).join(', ') + '<br>';
+        debugPanel.innerHTML = 'FAVORITES VIEW<br>';
+        debugPanel.innerHTML += 'Count: ' + favorites.size + '<br>';
     }
     
     const favoritesGrid = document.getElementById('favorites-grid');
     if (!favoritesGrid) {
-        if (debugPanel) debugPanel.innerHTML += 'ERROR: No favorites-grid found!<br>';
+        if (debugPanel) debugPanel.innerHTML += 'ERROR: favorites-grid missing!<br>';
+        alert('ERROR: Cannot find favorites-grid element!');
         return;
     }
     
+    // Clear the grid
     favoritesGrid.innerHTML = '';
     
     const noFavoritesMsg = document.getElementById('no-favorites');
-    if (!noFavoritesMsg) {
-        if (debugPanel) debugPanel.innerHTML += 'ERROR: No no-favorites element!<br>';
-        return;
-    }
     
     if (favorites.size === 0) {
-        if (debugPanel) debugPanel.innerHTML += 'No favorites to show<br>';
-        noFavoritesMsg.textContent = 'You have no saved favorites yet.';
-        noFavoritesMsg.style.display = 'block';
-        noFavoritesMsg.classList.remove('hidden');
+        if (noFavoritesMsg) {
+            noFavoritesMsg.textContent = 'You have no saved favorites yet.';
+            noFavoritesMsg.style.display = 'block';
+            noFavoritesMsg.classList.remove('hidden');
+        }
     } else {
-        noFavoritesMsg.style.display = 'none';
-        noFavoritesMsg.classList.add('hidden');
+        if (noFavoritesMsg) {
+            noFavoritesMsg.style.display = 'none';
+            noFavoritesMsg.classList.add('hidden');
+        }
         
         let foundCount = 0;
+        let notFoundList = [];
         
-        // Try to find and clone each favorited card
+        // Look for each favorite
         favorites.forEach(favoriteId => {
-            if (debugPanel) debugPanel.innerHTML += 'Looking for: ' + favoriteId + '<br>';
+            // Try querySelector with the data-id attribute
+            let foundCard = document.querySelector(`[data-id="${favoriteId}"]`);
             
-            // Search all cards in the document
-            const allCards = document.querySelectorAll('.phrase-card');
-            let foundCard = null;
-            
-            for (let card of allCards) {
-                if (card.dataset.id === favoriteId) {
-                    foundCard = card;
-                    break;
-                }
-            }
-            
-            if (foundCard) {
+            if (foundCard && foundCard.classList.contains('phrase-card')) {
                 foundCount++;
                 const clonedCard = foundCard.cloneNode(true);
                 favoritesGrid.appendChild(clonedCard);
-                if (debugPanel) debugPanel.innerHTML += '✓ Found and added: ' + favoriteId + '<br>';
             } else {
-                if (debugPanel) debugPanel.innerHTML += '✗ NOT FOUND: ' + favoriteId + '<br>';
+                notFoundList.push(favoriteId);
             }
         });
         
         if (debugPanel) {
-            debugPanel.innerHTML += '<b>Result: ' + foundCount + '/' + favorites.size + ' added</b><br>';
+            debugPanel.innerHTML += 'Found: ' + foundCount + '/' + favorites.size + '<br>';
+            if (notFoundList.length > 0) {
+                debugPanel.innerHTML += 'Missing: ' + notFoundList.join(', ') + '<br>';
+            }
+            debugPanel.innerHTML += 'Grid has ' + favoritesGrid.children.length + ' cards now<br>';
         }
         
         // Re-initialize buttons for the cloned cards
