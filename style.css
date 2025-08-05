@@ -133,11 +133,9 @@ body {
     border: 2px solid #e9ecef;
     border-radius: 10px;
     padding: 15px;
-    position: relative;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space between content and controls */
+    align-items: center; /* Vertically center content */
     transition: all 0.3s ease;
 }
 
@@ -145,6 +143,18 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border-color: #004c8c;
+}
+
+.phrase-content {
+    flex-grow: 1; /* Allow content to take up available space */
+    margin-right: 15px; /* Add some space between text and icons */
+}
+
+.card-controls {
+    display: flex;
+    flex-direction: column; /* Stack controls vertically */
+    gap: 5px;
+    flex-shrink: 0; /* Prevent controls from shrinking */
 }
 
 .catalan-text {
@@ -166,11 +176,7 @@ body {
     margin-top: 5px;
 }
 
-/* Fixed positioning for audio and favorite buttons */
 .audio-button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
     background: #ffcc02;
     border: none;
     border-radius: 50%;
@@ -190,9 +196,6 @@ body {
 }
 
 .favorite-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -204,6 +207,7 @@ body {
 }
 
 .favorite-button.favorited {
+    content: "⭐"; /* Change icon to filled star */
     color: #ffcc02;
 }
 
