@@ -3,20 +3,46 @@ let allPhrases = [];
 let speech;
 const favoritesKey = 'tarragonaFavorites';
 let favorites = new Set();
+let debugLog = [];  // Store debug messages
 
 // IMMEDIATE TEST - This should show as soon as the script loads
 // alert('Script is loading!');  // Commented out now that we know it works
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Another test to show DOM is ready
-    // alert('DOM Content Loaded!');  // Commented out now that we know it works
-    
     // Add visible debug panel with ID for easier access
     const debugPanel = document.createElement('div');
     debugPanel.id = 'debug-panel';
-    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;max-height:200px;overflow-y:auto;font-size:11px;width:250px;';
-    debugPanel.innerHTML = 'DEBUG PANEL ACTIVE';
+    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;max-height:300px;overflow-y:auto;font-size:11px;width:300px;font-family:monospace;';
+    debugPanel.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <b>DEBUG LOG</b>
+            <button id="copy-debug" style="padding:2px 8px;background:#4CAF50;color:white;border:none;border-radius:3px;cursor:pointer;">Copy Log</button>
+        </div>
+        <div id="debug-content" style="white-space:pre-wrap;word-break:break-all;"></div>
+    `;
     document.body.appendChild(debugPanel);
+    
+    // Add copy functionality
+    document.getElementById('copy-debug').addEventListener('click', function() {
+        const logText = debugLog.join('\n');
+        navigator.clipboard.writeText(logText).then(function() {
+            addDebug('Log copied to clipboard!');
+        }).catch(function() {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = logText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            addDebug('Log copied (fallback method)');
+        });
+    });
+    
+    addDebug('=== PAGE LOADED ===');
+    addDebug('Time: ' + new Date().toLocaleTimeString());
     
     initializeAllSections();
     collectAllPhrases();
@@ -30,9 +56,30 @@ document.addEventListener('DOMContentLoaded', function() {
     if ('speechSynthesis' in window) {
         speech = window.speechSynthesis;
     }
+    
+    addDebug('Init complete. Favorites loaded: ' + favorites.size);
 });
 
+function addDebug(message) {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${message}`;
+    debugLog.push(logEntry);
+    
+    // Keep only last 100 entries
+    if (debugLog.length > 100) {
+        debugLog.shift();
+    }
+    
+    const debugContent = document.getElementById('debug-content');
+    if (debugContent) {
+        debugContent.textContent = debugLog.join('\n');
+        debugContent.scrollTop = debugContent.scrollHeight;
+    }
+}
+
 function initializeButtons() {
+    addDebug('initializeButtons() called');
+    
     // Remove ALL existing event listeners first by cloning and replacing buttons
     document.querySelectorAll('.favorite-button').forEach(button => {
         const newButton = button.cloneNode(true);
@@ -46,7 +93,10 @@ function initializeButtons() {
     
     // Now add fresh event listeners
     setTimeout(function() {
-        document.querySelectorAll('.favorite-button').forEach(button => {
+        const favButtons = document.querySelectorAll('.favorite-button');
+        addDebug('Adding listeners to ' + favButtons.length + ' favorite buttons');
+        
+        favButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -56,7 +106,7 @@ function initializeButtons() {
                 
                 const card = this.closest('.phrase-card');
                 if (!card || !card.dataset.id) {
-                    alert('No card or ID found!');
+                    addDebug('ERROR: No card/ID for favorite button');
                     return;
                 }
                 
@@ -66,12 +116,15 @@ function initializeButtons() {
                     favorites.delete(cardId);
                     this.textContent = '☆';
                     this.classList.remove('favorited');
+                    addDebug('Removed favorite: ' + cardId);
                 } else {
                     favorites.add(cardId);
                     this.textContent = '⭐';
                     this.classList.add('favorited');
+                    addDebug('Added favorite: ' + cardId);
                 }
                 
+                addDebug('Total favorites now: ' + favorites.size);
                 saveFavorites();
                 updateFavoritesUI();
                 
@@ -137,26 +190,24 @@ function collectAllPhrases() {
 function initializeNavigation() {
     document.querySelectorAll('.nav-button').forEach(button => {
         button.addEventListener('click', function() {
-            // Debug
-            const debugPanel = document.getElementById('debug-panel');
-            if (debugPanel) {
-                debugPanel.innerHTML = 'Nav clicked: ' + this.getAttribute('data-section') + '<br>';
-            }
+            const sectionId = this.getAttribute('data-section');
+            addDebug('Navigation clicked: ' + sectionId);
             
             document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
             
             this.classList.add('active');
             
-            const sectionId = this.getAttribute('data-section');
             const targetSection = document.getElementById(sectionId);
             
             if (targetSection) {
                 targetSection.classList.add('active');
+            } else {
+                addDebug('ERROR: Section not found: ' + sectionId);
             }
 
             if (sectionId === 'favorites') {
-                if (debugPanel) debugPanel.innerHTML += 'Calling renderFavorites()...<br>';
+                addDebug('Switching to favorites view...');
                 renderFavorites();
             } else if (sectionId === 'all') {
                 document.querySelectorAll('.phrase-card').forEach(card => {
@@ -270,65 +321,90 @@ function updateFavoritesUI() {
 }
 
 function renderFavorites() {
-    // Get debug panel by ID
-    const debugPanel = document.getElementById('debug-panel');
-    if (debugPanel) {
-        debugPanel.innerHTML = 'FAVORITES VIEW<br>';
-        debugPanel.innerHTML += 'Count: ' + favorites.size + '<br>';
-    }
+    addDebug('=== renderFavorites() START ===');
+    addDebug('Favorites to render: ' + Array.from(favorites).join(', '));
     
     const favoritesGrid = document.getElementById('favorites-grid');
     if (!favoritesGrid) {
-        if (debugPanel) debugPanel.innerHTML += 'ERROR: favorites-grid missing!<br>';
-        alert('ERROR: Cannot find favorites-grid element!');
+        addDebug('ERROR: favorites-grid element not found!');
         return;
     }
     
     // Clear the grid
     favoritesGrid.innerHTML = '';
+    addDebug('Cleared favorites grid');
     
     const noFavoritesMsg = document.getElementById('no-favorites');
     
     if (favorites.size === 0) {
+        addDebug('No favorites to display');
         if (noFavoritesMsg) {
             noFavoritesMsg.textContent = 'You have no saved favorites yet.';
             noFavoritesMsg.style.display = 'block';
             noFavoritesMsg.classList.remove('hidden');
         }
-    } else {
-        if (noFavoritesMsg) {
-            noFavoritesMsg.style.display = 'none';
-            noFavoritesMsg.classList.add('hidden');
-        }
-        
-        let foundCount = 0;
-        let notFoundList = [];
-        
-        // Look for each favorite
-        favorites.forEach(favoriteId => {
-            // Try querySelector with the data-id attribute
-            let foundCard = document.querySelector(`[data-id="${favoriteId}"]`);
-            
-            if (foundCard && foundCard.classList.contains('phrase-card')) {
-                foundCount++;
-                const clonedCard = foundCard.cloneNode(true);
-                favoritesGrid.appendChild(clonedCard);
-            } else {
-                notFoundList.push(favoriteId);
-            }
-        });
-        
-        if (debugPanel) {
-            debugPanel.innerHTML += 'Found: ' + foundCount + '/' + favorites.size + '<br>';
-            if (notFoundList.length > 0) {
-                debugPanel.innerHTML += 'Missing: ' + notFoundList.join(', ') + '<br>';
-            }
-            debugPanel.innerHTML += 'Grid has ' + favoritesGrid.children.length + ' cards now<br>';
-        }
-        
-        // Re-initialize buttons for the cloned cards
-        setTimeout(initializeButtons, 100);
+        return;
     }
+    
+    // Hide the no favorites message
+    if (noFavoritesMsg) {
+        noFavoritesMsg.style.display = 'none';
+        noFavoritesMsg.classList.add('hidden');
+    }
+    
+    // Get ALL phrase cards
+    const allCards = document.querySelectorAll('.phrase-card');
+    addDebug('Total phrase cards in DOM: ' + allCards.length);
+    
+    // Log first few card IDs for debugging
+    const sampleIds = [];
+    for (let i = 0; i < Math.min(5, allCards.length); i++) {
+        if (allCards[i].dataset.id) {
+            sampleIds.push(allCards[i].dataset.id);
+        }
+    }
+    addDebug('Sample card IDs found: ' + sampleIds.join(', '));
+    
+    // Build a map of cards by ID
+    const cardMap = new Map();
+    allCards.forEach(card => {
+        if (card.dataset.id) {
+            if (!cardMap.has(card.dataset.id)) {
+                cardMap.set(card.dataset.id, card);
+            }
+        }
+    });
+    addDebug('Unique card IDs in map: ' + cardMap.size);
+    
+    // Try to add each favorite
+    let foundCount = 0;
+    let notFoundList = [];
+    
+    favorites.forEach(favoriteId => {
+        const cardToClone = cardMap.get(favoriteId);
+        
+        if (cardToClone) {
+            foundCount++;
+            const clonedCard = cardToClone.cloneNode(true);
+            favoritesGrid.appendChild(clonedCard);
+            addDebug('✓ Added: ' + favoriteId);
+        } else {
+            notFoundList.push(favoriteId);
+            addDebug('✗ Not found: ' + favoriteId);
+        }
+    });
+    
+    addDebug('RESULT: Added ' + foundCount + ' of ' + favorites.size + ' favorites');
+    addDebug('Grid now has ' + favoritesGrid.children.length + ' children');
+    
+    if (notFoundList.length > 0) {
+        addDebug('Missing IDs: ' + notFoundList.join(', '));
+    }
+    
+    addDebug('=== renderFavorites() END ===');
+    
+    // Re-initialize buttons for the cloned cards
+    setTimeout(initializeButtons, 200);
 }
 
 // --- Audio Functionality ---
