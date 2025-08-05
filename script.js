@@ -5,15 +5,15 @@ const favoritesKey = 'tarragonaFavorites';
 let favorites = new Set();
 
 // IMMEDIATE TEST - This should show as soon as the script loads
-alert('Script is loading!');
+// alert('Script is loading!');  // Commented out now that we know it works
 
 document.addEventListener('DOMContentLoaded', function() {
     // Another test to show DOM is ready
-    alert('DOM Content Loaded!');
+    // alert('DOM Content Loaded!');  // Commented out now that we know it works
     
     // Add visible debug panel
     const debugPanel = document.createElement('div');
-    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;';
+    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;max-height:200px;overflow-y:auto;font-size:11px;';
     debugPanel.innerHTML = 'DEBUG PANEL ACTIVE';
     document.body.appendChild(debugPanel);
     
@@ -256,32 +256,48 @@ function renderFavorites() {
     favoritesGrid.innerHTML = '';
     
     const noFavoritesMsg = document.getElementById('no-favorites');
+    
+    // Debug: Show what favorites we're trying to render
+    const debugPanel = document.querySelector('[style*="yellow"]');
+    if (debugPanel) {
+        debugPanel.innerHTML = 'DEBUG: Rendering ' + favorites.size + ' favorites<br>';
+        debugPanel.innerHTML += 'IDs: ' + Array.from(favorites).join(', ');
+    }
+    
     if (favorites.size === 0) {
         noFavoritesMsg.classList.remove('hidden');
+        noFavoritesMsg.style.display = 'block'; // Force display
     } else {
         noFavoritesMsg.classList.add('hidden');
+        noFavoritesMsg.style.display = 'none'; // Force hide
         
-        // Look for original cards only
+        let foundCount = 0;
+        
+        // Look through ALL phrase cards in the document
         favorites.forEach(favoriteId => {
-            let originalCard = null;
-            const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
+            // First try to find in original sections
+            let cardToClone = document.querySelector(`.phrase-card[data-id="${favoriteId}"]`);
             
-            for (let sectionId of sections) {
-                const section = document.getElementById(sectionId);
-                if (section) {
-                    const card = section.querySelector(`.phrase-card[data-id="${favoriteId}"]`);
-                    if (card) {
-                        originalCard = card;
-                        break;
-                    }
+            if (cardToClone) {
+                foundCount++;
+                const clonedCard = cardToClone.cloneNode(true);
+                favoritesGrid.appendChild(clonedCard);
+                
+                // Debug
+                if (debugPanel) {
+                    debugPanel.innerHTML += '<br>Found: ' + favoriteId;
+                }
+            } else {
+                // Debug - card not found
+                if (debugPanel) {
+                    debugPanel.innerHTML += '<br>NOT FOUND: ' + favoriteId;
                 }
             }
-            
-            if (originalCard) {
-                const clonedCard = originalCard.cloneNode(true);
-                favoritesGrid.appendChild(clonedCard);
-            }
         });
+        
+        if (debugPanel) {
+            debugPanel.innerHTML += '<br>Total found: ' + foundCount + '/' + favorites.size;
+        }
         
         // Re-initialize buttons for the favorites view
         setTimeout(initializeButtons, 100);
