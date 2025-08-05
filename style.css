@@ -166,6 +166,7 @@ body {
     margin-top: 5px;
 }
 
+/* Fixed positioning for audio and favorite buttons */
 .audio-button {
     position: absolute;
     bottom: 10px;
@@ -188,7 +189,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Favorite button styles */
 .favorite-button {
     position: absolute;
     top: 10px;
