@@ -231,7 +231,6 @@ function renderFavorites() {
                         favoriteButton.textContent = '⭐';
                     }
 
-                    // Append the cloned card to the favorites grid
                     favoritesGrid.appendChild(clonedCard);
                 }
             }
