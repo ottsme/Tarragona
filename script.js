@@ -17,18 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeButtons() {
-    // Event delegation for audio buttons
+    // Event delegation for audio and favorite buttons
     document.body.addEventListener('click', function(e) {
         if (e.target.classList.contains('audio-button')) {
             const card = e.target.closest('.phrase-card');
             const catalanText = card.dataset.catalan;
             speakCatalan(catalanText);
-        }
-    });
-    
-    // Event delegation for favorite buttons
-    document.body.addEventListener('click', function(e) {
-        if (e.target.classList.contains('favorite-button')) {
+        } else if (e.target.classList.contains('favorite-button')) {
             toggleFavorite(e);
         }
     });
@@ -85,7 +80,6 @@ function initializeNavigation() {
             if (sectionId === 'favorites') {
                 renderFavorites();
             } else if (sectionId === 'all') {
-                // Show all cards when "All" is active
                 document.querySelectorAll('.phrase-card').forEach(card => {
                     card.style.display = 'flex';
                 });
@@ -192,12 +186,24 @@ function toggleFavorite(event) {
     
     if (favorites.has(cardId)) {
         favorites.delete(cardId);
-        button.classList.remove('favorited');
-        button.textContent = '☆'; // Change to empty star
+        // Find and update all matching cards, including the cloned one
+        document.querySelectorAll(`.phrase-card[data-id="${cardId}"]`).forEach(match => {
+            const btn = match.querySelector('.favorite-button');
+            if (btn) {
+                btn.classList.remove('favorited');
+                btn.textContent = '☆';
+            }
+        });
     } else {
         favorites.add(cardId);
-        button.classList.add('favorited');
-        button.textContent = '⭐'; // Change to filled star
+        // Find and update all matching cards, including the cloned one
+        document.querySelectorAll(`.phrase-card[data-id="${cardId}"]`).forEach(match => {
+            const btn = match.querySelector('.favorite-button');
+            if (btn) {
+                btn.classList.add('favorited');
+                btn.textContent = '⭐';
+            }
+        });
     }
     
     saveFavorites();
@@ -224,6 +230,9 @@ function renderFavorites() {
                 const originalCard = document.querySelector(`.phrase-card[data-id="${phrase.id}"]`);
                 if (originalCard) {
                     const clonedCard = originalCard.cloneNode(true);
+                    
+                    // We must remove the data-id from the cloned card to avoid duplicates
+                    clonedCard.removeAttribute('data-id');
                     
                     const favoriteButton = clonedCard.querySelector('.favorite-button');
                     if (favoriteButton) {
