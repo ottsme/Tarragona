@@ -11,9 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Another test to show DOM is ready
     // alert('DOM Content Loaded!');  // Commented out now that we know it works
     
-    // Add visible debug panel
+    // Add visible debug panel with ID for easier access
     const debugPanel = document.createElement('div');
-    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;max-height:200px;overflow-y:auto;font-size:11px;';
+    debugPanel.id = 'debug-panel';
+    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;max-height:200px;overflow-y:auto;font-size:11px;width:250px;';
     debugPanel.innerHTML = 'DEBUG PANEL ACTIVE';
     document.body.appendChild(debugPanel);
     
@@ -126,6 +127,12 @@ function collectAllPhrases() {
 function initializeNavigation() {
     document.querySelectorAll('.nav-button').forEach(button => {
         button.addEventListener('click', function() {
+            // Debug
+            const debugPanel = document.getElementById('debug-panel');
+            if (debugPanel) {
+                debugPanel.innerHTML = 'Nav clicked: ' + this.getAttribute('data-section') + '<br>';
+            }
+            
             document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
             
@@ -139,6 +146,7 @@ function initializeNavigation() {
             }
 
             if (sectionId === 'favorites') {
+                if (debugPanel) debugPanel.innerHTML += 'Calling renderFavorites()...<br>';
                 renderFavorites();
             } else if (sectionId === 'all') {
                 document.querySelectorAll('.phrase-card').forEach(card => {
@@ -252,54 +260,69 @@ function updateFavoritesUI() {
 }
 
 function renderFavorites() {
+    // Get debug panel by ID
+    const debugPanel = document.getElementById('debug-panel');
+    if (debugPanel) {
+        debugPanel.innerHTML = 'renderFavorites() CALLED<br>';
+        debugPanel.innerHTML += 'Favorites size: ' + favorites.size + '<br>';
+        debugPanel.innerHTML += 'IDs: ' + Array.from(favorites).join(', ') + '<br>';
+    }
+    
     const favoritesGrid = document.getElementById('favorites-grid');
+    if (!favoritesGrid) {
+        if (debugPanel) debugPanel.innerHTML += 'ERROR: No favorites-grid found!<br>';
+        return;
+    }
+    
     favoritesGrid.innerHTML = '';
     
     const noFavoritesMsg = document.getElementById('no-favorites');
-    
-    // Debug: Show what favorites we're trying to render
-    const debugPanel = document.querySelector('[style*="yellow"]');
-    if (debugPanel) {
-        debugPanel.innerHTML = 'DEBUG: Rendering ' + favorites.size + ' favorites<br>';
-        debugPanel.innerHTML += 'IDs: ' + Array.from(favorites).join(', ');
+    if (!noFavoritesMsg) {
+        if (debugPanel) debugPanel.innerHTML += 'ERROR: No no-favorites element!<br>';
+        return;
     }
     
     if (favorites.size === 0) {
+        if (debugPanel) debugPanel.innerHTML += 'No favorites to show<br>';
+        noFavoritesMsg.textContent = 'You have no saved favorites yet.';
+        noFavoritesMsg.style.display = 'block';
         noFavoritesMsg.classList.remove('hidden');
-        noFavoritesMsg.style.display = 'block'; // Force display
     } else {
+        noFavoritesMsg.style.display = 'none';
         noFavoritesMsg.classList.add('hidden');
-        noFavoritesMsg.style.display = 'none'; // Force hide
         
         let foundCount = 0;
         
-        // Look through ALL phrase cards in the document
+        // Try to find and clone each favorited card
         favorites.forEach(favoriteId => {
-            // First try to find in original sections
-            let cardToClone = document.querySelector(`.phrase-card[data-id="${favoriteId}"]`);
+            if (debugPanel) debugPanel.innerHTML += 'Looking for: ' + favoriteId + '<br>';
             
-            if (cardToClone) {
+            // Search all cards in the document
+            const allCards = document.querySelectorAll('.phrase-card');
+            let foundCard = null;
+            
+            for (let card of allCards) {
+                if (card.dataset.id === favoriteId) {
+                    foundCard = card;
+                    break;
+                }
+            }
+            
+            if (foundCard) {
                 foundCount++;
-                const clonedCard = cardToClone.cloneNode(true);
+                const clonedCard = foundCard.cloneNode(true);
                 favoritesGrid.appendChild(clonedCard);
-                
-                // Debug
-                if (debugPanel) {
-                    debugPanel.innerHTML += '<br>Found: ' + favoriteId;
-                }
+                if (debugPanel) debugPanel.innerHTML += '✓ Found and added: ' + favoriteId + '<br>';
             } else {
-                // Debug - card not found
-                if (debugPanel) {
-                    debugPanel.innerHTML += '<br>NOT FOUND: ' + favoriteId;
-                }
+                if (debugPanel) debugPanel.innerHTML += '✗ NOT FOUND: ' + favoriteId + '<br>';
             }
         });
         
         if (debugPanel) {
-            debugPanel.innerHTML += '<br>Total found: ' + foundCount + '/' + favorites.size;
+            debugPanel.innerHTML += '<b>Result: ' + foundCount + '/' + favorites.size + ' added</b><br>';
         }
         
-        // Re-initialize buttons for the favorites view
+        // Re-initialize buttons for the cloned cards
         setTimeout(initializeButtons, 100);
     }
 }
