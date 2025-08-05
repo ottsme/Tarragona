@@ -133,9 +133,9 @@ body {
     border: 2px solid #e9ecef;
     border-radius: 10px;
     padding: 15px;
-    display: flex; /* Use flexbox for layout */
-    justify-content: space-between; /* Space between content and controls */
-    align-items: center; /* Vertically center content */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     transition: all 0.3s ease;
 }
 
@@ -146,16 +146,16 @@ body {
 }
 
 .phrase-content {
-    flex-grow: 1; /* Allow content to take up available space */
-    margin-right: 15px; /* Add some space between text and icons */
+    flex-grow: 1;
+    margin-right: 15px;
 }
 
 .card-controls {
     display: flex;
-    flex-direction: row; /* Arrange controls horizontally */
+    flex-direction: row;
     align-items: center;
-    gap: 10px; /* Add gap between icons */
-    flex-shrink: 0; /* Prevent controls from shrinking */
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .catalan-text {
