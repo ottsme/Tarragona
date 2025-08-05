@@ -61,22 +61,34 @@
         }
 
         .navigation {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .navigation::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-button {
             background: rgba(255, 255, 255, 0.9);
             border: none;
-            padding: 15px 20px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1.1em;
+            font-size: 0.9em;
             font-weight: 500;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 120px;
+            text-align: center;
         }
 
         .nav-button:hover {
@@ -222,6 +234,15 @@
             text-align: center;
         }
 
+        .all-content-wrapper .content-section {
+            display: block !important;
+            margin-bottom: 40px;
+        }
+
+        .all-content-wrapper .section-title {
+            margin-bottom: 20px;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2em;
@@ -245,7 +266,6 @@
     <div class="container">
         <div class="header">
             <h1>🏴󠁥󠁳󠁣󠁴󠁿 Catalan Learning Tool</h1>
-            <p>Interactive guide for your Tarragona trip (13 people) • August 11-19, 2025</p>
         </div>
 
         <div class="search-container">
@@ -253,18 +273,29 @@
         </div>
 
         <div class="navigation">
-            <button class="nav-button active" data-section="greetings">👋 Greetings & Social</button>
-            <button class="nav-button" data-section="restaurants">🍽️ Restaurants & Food</button>
-            <button class="nav-button" data-section="museums">🏛️ Museums & Sightseeing</button>
-            <button class="nav-button" data-section="shopping">🛒 Shopping & Markets</button>
-            <button class="nav-button" data-section="transport">🚗 Transportation</button>
-            <button class="nav-button" data-section="group">👥 Group Management</button>
-            <button class="nav-button" data-section="accommodation">🏠 Villa & Accommodation</button>
+            <button class="nav-button active" data-section="all">🏠 All</button>
+            <button class="nav-button" data-section="greetings">👋 Greetings</button>
+            <button class="nav-button" data-section="restaurants">🍽️ Food</button>
+            <button class="nav-button" data-section="museums">🏛️ Museums</button>
+            <button class="nav-button" data-section="shopping">🛒 Shopping</button>
+            <button class="nav-button" data-section="transport">🚗 Transport</button>
+            <button class="nav-button" data-section="group">👥 Groups</button>
+            <button class="nav-button" data-section="accommodation">🏠 Villa</button>
             <button class="nav-button" data-section="emergency">🆘 Emergency</button>
         </div>
 
+        <!-- All Sections Container -->
+        <div class="content-section active" id="all">
+            <h2 class="section-title">All Phrases</h2>
+            <div class="all-sections-container">
+                <div class="all-content-wrapper">
+                    <!-- All sections will be shown here -->
+                </div>
+            </div>
+        </div>
+
         <!-- Greetings & Social Section -->
-        <div class="content-section active" id="greetings">
+        <div class="content-section" id="greetings">
             <h2 class="section-title">Greetings & Social Interactions</h2>
             
             <div class="subsection">
@@ -362,7 +393,7 @@
                     <div class="phrase-card" data-catalan="sóc d'Estònia">
                         <div class="catalan-text">sóc d'Estònia</div>
                         <div class="translation-text">I'm from Estonia</div>
-                        <button class="audio-button" onclick="speakCatalan('sóc d\\'Estònia')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('sóc d Estònia')">🔊</button>
                     </div>
                 </div>
             </div>
@@ -398,7 +429,7 @@
                     <div class="phrase-card" data-catalan="taules una al costat de l'altra">
                         <div class="catalan-text">taules una al costat de l'altra</div>
                         <div class="translation-text">tables next to each other</div>
-                        <button class="audio-button" onclick="speakCatalan('taules una al costat de l\\'altra')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('taules una al costat de l altra')">🔊</button>
                     </div>
                     <div class="phrase-card" data-catalan="tenim una reserva">
                         <div class="catalan-text">tenim una reserva</div>
@@ -511,7 +542,7 @@
                     <div class="phrase-card" data-catalan="l'audioguia és en anglès">
                         <div class="catalan-text">l'audioguia és en anglès</div>
                         <div class="translation-text">is the audio guide in English</div>
-                        <button class="audio-button" onclick="speakCatalan('l\\'audioguia és en anglès')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('l audioguia és en anglès')">🔊</button>
                     </div>
                     <div class="phrase-card" data-catalan="perfecte, agafem la de les tres">
                         <div class="catalan-text">perfecte, agafem la de les tres</div>
@@ -532,7 +563,7 @@
                     <div class="phrase-card" data-catalan="quina és la història d'aquest lloc">
                         <div class="catalan-text">quina és la història d'aquest lloc</div>
                         <div class="translation-text">what's the history of this place</div>
-                        <button class="audio-button" onclick="speakCatalan('quina és la història d\\'aquest lloc')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('quina és la història d aquest lloc')">🔊</button>
                     </div>
                     <div class="phrase-card" data-catalan="quin lloc tan bonic">
                         <div class="catalan-text">quin lloc tan bonic</div>
@@ -666,7 +697,7 @@
                     <div class="phrase-card" data-catalan="a l'esquerra">
                         <div class="catalan-text">a l'esquerra</div>
                         <div class="translation-text">to the left</div>
-                        <button class="audio-button" onclick="speakCatalan('a l\\'esquerra')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('a l esquerra')">🔊</button>
                     </div>
                 </div>
             </div>
@@ -682,7 +713,7 @@
                     <div class="phrase-card" data-catalan="on és l'estació més propera">
                         <div class="catalan-text">on és l'estació més propera</div>
                         <div class="translation-text">where's the nearest station</div>
-                        <button class="audio-button" onclick="speakCatalan('on és l\\'estació més propera')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('on és l estació més propera')">🔊</button>
                     </div>
                     <div class="phrase-card" data-catalan="cabem tots en un autobús?">
                         <div class="catalan-text">cabem tots en un autobús?</div>
@@ -816,7 +847,7 @@
                     <div class="phrase-card" data-catalan="quan temps d'espera per una taula gran?">
                         <div class="catalan-text">quan temps d'espera per una taula gran?</div>
                         <div class="translation-text">how long wait for a big table?</div>
-                        <button class="audio-button" onclick="speakCatalan('quan temps d\\'espera per una taula gran?')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('quan temps d espera per una taula gran')">🔊</button>
                     </div>
                 </div>
             </div>
@@ -842,7 +873,7 @@
                     <div class="phrase-card" data-catalan="som a l'adreça">
                         <div class="catalan-text">som a l'adreça</div>
                         <div class="translation-text">we're at the address</div>
-                        <button class="audio-button" onclick="speakCatalan('som a l\\'adreça')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('som a l adreça')">🔊</button>
                     </div>
                 </div>
             </div>
@@ -946,7 +977,7 @@
                     <div class="phrase-card" data-catalan="on és l'hospital">
                         <div class="catalan-text">on és l'hospital</div>
                         <div class="translation-text">where is the hospital</div>
-                        <button class="audio-button" onclick="speakCatalan('on és l\\'hospital')">🔊</button>
+                        <button class="audio-button" onclick="speakCatalan('on és l hospital')">🔊</button>
                     </div>
                     <div class="phrase-card" data-catalan="necessito un metge">
                         <div class="catalan-text">necessito un metge</div>
@@ -959,13 +990,33 @@
     </div>
 
     <script>
-        // Speech synthesis function
+        // Normalize text for search and speech - removes accents, apostrophes, converts to lowercase
+        function normalizeText(text) {
+            return text
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove accents
+                .replace(/[''`]/g, ' ') // Replace all types of apostrophes with spaces
+                .replace(/[^\w\s]/g, ' ') // Replace punctuation with spaces
+                .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                .trim();
+        }
+
+        // Speech synthesis function with character normalization
         function speakCatalan(text) {
             if ('speechSynthesis' in window) {
                 // Cancel any ongoing speech
                 speechSynthesis.cancel();
                 
-                const utterance = new SpeechSynthesisUtterance(text);
+                // Normalize text by removing problematic characters but keep it readable
+                const normalizedText = text
+                    .replace(/'/g, ' ')  // Replace apostrophes with spaces
+                    .replace(/'/g, ' ')  // Replace smart apostrophes
+                    .replace(/'/g, ' ')  // Replace curly apostrophes
+                    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                    .trim();
+                
+                const utterance = new SpeechSynthesisUtterance(normalizedText);
                 utterance.lang = 'ca-ES';
                 utterance.rate = 0.8; // Slightly slower for learning
                 utterance.pitch = 1;
@@ -984,74 +1035,164 @@
             }
         }
 
-        // Navigation functionality
-        document.querySelectorAll('.nav-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons and sections
-                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-                
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Show corresponding section
-                const sectionId = this.getAttribute('data-section');
-                document.getElementById(sectionId).classList.add('active');
+        // Initialize "All" section by showing all other sections
+        function initializeAllSections() {
+            const allWrapper = document.querySelector('#all .all-content-wrapper');
+            const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
+            
+            sections.forEach(sectionId => {
+                const originalSection = document.getElementById(sectionId);
+                if (originalSection) {
+                    const clonedSection = originalSection.cloneNode(true);
+                    clonedSection.id = sectionId + '-all';
+                    allWrapper.appendChild(clonedSection);
+                }
             });
-        });
+            
+            // Re-initialize event listeners for cloned content
+            initializePhraseCards();
+            initializeAudioButtons();
+        }
+
+        // Navigation functionality with smooth scrolling
+        function initializeNavigation() {
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and sections
+                    document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const sectionId = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        
+                        // Smooth scroll to content (skip for 'all' section)
+                        if (sectionId !== 'all') {
+                            setTimeout(() => {
+                                targetSection.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'start' 
+                                });
+                            }, 100);
+                        } else {
+                            // For 'all' section, scroll to top
+                            setTimeout(() => {
+                                window.scrollTo({ 
+                                    top: 0, 
+                                    behavior: 'smooth' 
+                                });
+                            }, 100);
+                        }
+                    }
+                });
+            });
+        }
 
         // Phrase card flip functionality
-        document.querySelectorAll('.phrase-card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                // Don't flip if audio button was clicked
-                if (e.target.classList.contains('audio-button')) {
-                    return;
-                }
-                this.classList.toggle('flipped');
-            });
-        });
-
-        // Search functionality
-        const searchBox = document.getElementById('searchBox');
-        searchBox.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const allCards = document.querySelectorAll('.phrase-card');
-            
-            allCards.forEach(card => {
-                const catalanText = card.querySelector('.catalan-text').textContent.toLowerCase();
-                const translationText = card.querySelector('.translation-text').textContent.toLowerCase();
-                const literalText = card.querySelector('.literal-text');
-                const literalContent = literalText ? literalText.textContent.toLowerCase() : '';
+        function initializePhraseCards() {
+            document.querySelectorAll('.phrase-card').forEach(card => {
+                // Remove existing listeners to prevent duplicates
+                const newCard = card.cloneNode(true);
+                card.parentNode.replaceChild(newCard, card);
                 
-                const isMatch = catalanText.includes(searchTerm) || 
-                               translationText.includes(searchTerm) || 
-                               literalContent.includes(searchTerm);
+                newCard.addEventListener('click', function(e) {
+                    // Don't flip if audio button was clicked
+                    if (e.target.classList.contains('audio-button')) {
+                        return;
+                    }
+                    this.classList.toggle('flipped');
+                    
+                    // Auto-flip back after 5 seconds
+                    setTimeout(() => {
+                        this.classList.remove('flipped');
+                    }, 5000);
+                });
+            });
+        }
+
+        // Search functionality with improved normalization
+        function initializeSearch() {
+            const searchBox = document.getElementById('searchBox');
+            searchBox.addEventListener('input', function() {
+                const searchTerm = normalizeText(this.value);
+                const allCards = document.querySelectorAll('.phrase-card');
+                let hasResults = false;
                 
-                if (searchTerm === '') {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = isMatch ? 'flex' : 'none';
+                // If searching, automatically switch to "All" view
+                if (searchTerm.length > 0) {
+                    document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                    document.querySelector('[data-section="all"]').classList.add('active');
+                    document.getElementById('all').classList.add('active');
+                }
+                
+                allCards.forEach(card => {
+                    const catalanText = card.querySelector('.catalan-text');
+                    const translationText = card.querySelector('.translation-text');
+                    const literalText = card.querySelector('.literal-text');
+                    
+                    const catalanContent = catalanText ? normalizeText(catalanText.textContent) : '';
+                    const translationContent = translationText ? normalizeText(translationText.textContent) : '';
+                    const literalContent = literalText ? normalizeText(literalText.textContent) : '';
+                    
+                    const isMatch = searchTerm === '' || 
+                                   catalanContent.includes(searchTerm) || 
+                                   translationContent.includes(searchTerm) || 
+                                   literalContent.includes(searchTerm);
+                    
+                    if (isMatch) {
+                        card.style.display = 'flex';
+                        hasResults = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide no results message
+                let noResultsMsg = document.querySelector('.no-results-message');
+                if (searchTerm.length > 0 && !hasResults) {
+                    if (!noResultsMsg) {
+                        noResultsMsg = document.createElement('div');
+                        noResultsMsg.className = 'no-results-message';
+                        noResultsMsg.style.cssText = 'text-align: center; padding: 20px; color: #666; font-style: italic;';
+                        noResultsMsg.textContent = 'No phrases found for your search.';
+                        document.querySelector('#all .all-content-wrapper').appendChild(noResultsMsg);
+                    }
+                    noResultsMsg.style.display = 'block';
+                } else if (noResultsMsg) {
+                    noResultsMsg.style.display = 'none';
                 }
             });
-        });
+        }
 
-        // Prevent audio button clicks from flipping cards
-        document.querySelectorAll('.audio-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
+        // Initialize audio buttons
+        function initializeAudioButtons() {
+            document.querySelectorAll('.audio-button').forEach(button => {
+                // Remove existing listeners to prevent duplicates
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                newButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
             });
-        });
+        }
 
-        // Auto-flip cards back after 3 seconds of inactivity
-        let flipTimer;
-        document.querySelectorAll('.phrase-card').forEach(card => {
-            card.addEventListener('click', function() {
-                clearTimeout(flipTimer);
-                const currentCard = this;
-                flipTimer = setTimeout(() => {
-                    currentCard.classList.remove('flipped');
-                }, 5000);
-            });
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for all content to be rendered
+            setTimeout(() => {
+                initializeAllSections();
+                initializeNavigation();
+                initializePhraseCards();
+                initializeAudioButtons();
+                initializeSearch();
+            }, 100);
         });
     </script>
 </body>
