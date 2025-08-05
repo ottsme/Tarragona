@@ -22,11 +22,15 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeButtons() {
     // Event delegation for audio and favorite buttons
     document.body.addEventListener('click', function(e) {
+        console.log('Click detected on:', e.target);
         if (e.target.classList.contains('audio-button')) {
             const card = e.target.closest('.phrase-card');
             const catalanText = card.dataset.catalan;
             speakCatalan(catalanText);
         } else if (e.target.classList.contains('favorite-button')) {
+            console.log('Favorite button clicked');
+            e.preventDefault();
+            e.stopPropagation();
             // FIXED: Pass the target element, not the event
             toggleFavorite(e.target);
         }
@@ -182,18 +186,30 @@ function saveFavorites() {
 
 // FIXED: Now accepts the button element directly instead of event
 function toggleFavorite(button) {
+    console.log('toggleFavorite called with:', button);
     const card = button.closest('.phrase-card');
-    if (!card) return; // Safety check
+    console.log('Found card:', card);
+    if (!card) {
+        console.error('No card found');
+        return; // Safety check
+    }
     
     const cardId = card.dataset.id;
-    if (!cardId) return; // Safety check
+    console.log('Card ID:', cardId);
+    if (!cardId) {
+        console.error('No card ID found');
+        return; // Safety check
+    }
     
     if (favorites.has(cardId)) {
+        console.log('Removing from favorites:', cardId);
         favorites.delete(cardId);
     } else {
+        console.log('Adding to favorites:', cardId);
         favorites.add(cardId);
     }
     
+    console.log('Current favorites:', Array.from(favorites));
     saveFavorites();
     updateFavoritesUI();
     
