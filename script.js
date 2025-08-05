@@ -7,15 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     collectAllPhrases();
     loadFavorites();
     initializeNavigation();
-    initializeSearch();
     initializeButtons();
+    initializeSearch();
     
     // Check for speech synthesis support
     if ('speechSynthesis' in window) {
         speech = window.speechSynthesis;
-        speech.addEventListener('voiceschanged', function() {
-            // Voices are now available.
-        });
     }
 });
 
@@ -24,10 +21,8 @@ function initializeButtons() {
     document.body.addEventListener('click', function(e) {
         if (e.target.classList.contains('audio-button')) {
             const card = e.target.closest('.phrase-card');
-            if (card) {
-                const catalanText = card.querySelector('.catalan-text').textContent;
-                speakCatalan(catalanText);
-            }
+            const catalanText = card.dataset.catalan;
+            speakCatalan(catalanText);
         }
     });
     
@@ -60,11 +55,13 @@ function initializeAllSections() {
 // Collects all phrase cards from the DOM and stores them in an array
 function collectAllPhrases() {
     document.querySelectorAll('.phrase-card').forEach(card => {
+        const literalText = card.querySelector('.literal-text');
         allPhrases.push({
             id: card.dataset.id,
             element: card,
             catalan: normalizeText(card.querySelector('.catalan-text').textContent),
             translation: normalizeText(card.querySelector('.translation-text').textContent),
+            literal: literalText ? normalizeText(literalText.textContent) : ''
         });
     });
 }
@@ -88,7 +85,10 @@ function initializeNavigation() {
             if (sectionId === 'favorites') {
                 renderFavorites();
             } else if (sectionId === 'all') {
-                document.querySelectorAll('.phrase-card').forEach(card => card.style.display = 'flex');
+                // Show all cards when "All" is active
+                document.querySelectorAll('.phrase-card').forEach(card => {
+                    card.style.display = 'flex';
+                });
             }
         });
     });
@@ -121,7 +121,6 @@ function initializeSearch() {
             document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
             document.getElementById('all').classList.add('active');
         } else if (activeNavButton && activeNavButton.dataset.section === 'favorites') {
-             // If search is cleared while on favorites, show favorites
             renderFavorites();
             return;
         }
@@ -129,7 +128,8 @@ function initializeSearch() {
         allPhrases.forEach(phrase => {
             const isMatch = searchTerm === '' || 
                            phrase.catalan.includes(searchTerm) || 
-                           phrase.translation.includes(searchTerm);
+                           phrase.translation.includes(searchTerm) ||
+                           phrase.literal.includes(searchTerm);
             
             if (isMatch) {
                 phrase.element.style.display = 'flex';
@@ -220,17 +220,20 @@ function renderFavorites() {
         
         allPhrases.forEach(phrase => {
             if (favorites.has(phrase.id)) {
-                // Clone the card and remove its ID to avoid duplicates
-                const clonedCard = phrase.element.cloneNode(true);
-                clonedCard.removeAttribute('data-id');
-                
-                const favoriteButton = clonedCard.querySelector('.favorite-button');
-                if (favoriteButton) {
-                    favoriteButton.classList.add('favorited');
-                    favoriteButton.textContent = '⭐'; // Ensure the icon is a filled star
-                }
+                // Find the original card and clone it
+                const originalCard = document.querySelector(`.phrase-card[data-id="${phrase.id}"]`);
+                if (originalCard) {
+                    const clonedCard = originalCard.cloneNode(true);
+                    
+                    const favoriteButton = clonedCard.querySelector('.favorite-button');
+                    if (favoriteButton) {
+                        favoriteButton.classList.add('favorited');
+                        favoriteButton.textContent = '⭐';
+                    }
 
-                favoritesGrid.appendChild(clonedCard);
+                    // Append the cloned card to the favorites grid
+                    favoritesGrid.appendChild(clonedCard);
+                }
             }
         });
     }
@@ -240,22 +243,22 @@ function renderFavorites() {
 
 // Speech synthesis function with character normalization
 function speakCatalan(text) {
-    if (speech && speech.getVoices().length > 0) {
+    if (speech) {
         speech.cancel();
         
-        const normalizedText = text
-            .replace(/'/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-        
-        const utterance = new SpeechSynthesisUtterance(normalizedText);
+        const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ca-ES';
         utterance.rate = 0.8;
-        utterance.pitch = 1;
-        utterance.volume = 1;
         
-        speech.speak(utterance);
+        // This check ensures the voice is ready before speaking
+        speech.onvoiceschanged = function() {
+            speech.speak(utterance);
+        };
+        // If voices are already loaded, speak immediately
+        if (speech.getVoices().length > 0) {
+            speech.speak(utterance);
+        }
     } else {
-        alert('Speech synthesis not supported or voices not loaded in this browser.');
+        alert('Speech synthesis not supported in this browser.');
     }
 }
