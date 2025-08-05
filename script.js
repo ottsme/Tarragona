@@ -5,6 +5,9 @@ const favoritesKey = 'tarragonaFavorites';
 let favorites = new Set();
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add debug panel to page
+    addDebugPanel();
+    
     initializeAllSections();
     collectAllPhrases();
     loadFavorites();
@@ -19,16 +22,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function addDebugPanel() {
+    const debugPanel = document.createElement('div');
+    debugPanel.id = 'debug-panel';
+    debugPanel.style.cssText = `
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: yellow;
+        border: 2px solid black;
+        padding: 10px;
+        max-width: 300px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 9999;
+        font-size: 12px;
+        font-family: monospace;
+    `;
+    debugPanel.innerHTML = '<strong>DEBUG:</strong><br>';
+    document.body.appendChild(debugPanel);
+}
+
+function debugLog(message) {
+    const panel = document.getElementById('debug-panel');
+    if (panel) {
+        panel.innerHTML += message + '<br>';
+        panel.scrollTop = panel.scrollHeight;
+    }
+}
+
 function initializeButtons() {
     // Event delegation for audio and favorite buttons
     document.body.addEventListener('click', function(e) {
-        console.log('Click detected on:', e.target);
+        debugLog('Click on: ' + e.target.className);
         if (e.target.classList.contains('audio-button')) {
             const card = e.target.closest('.phrase-card');
             const catalanText = card.dataset.catalan;
             speakCatalan(catalanText);
         } else if (e.target.classList.contains('favorite-button')) {
-            console.log('Favorite button clicked');
+            debugLog('Favorite clicked!');
             e.preventDefault();
             e.stopPropagation();
             // FIXED: Pass the target element, not the event
@@ -186,30 +218,30 @@ function saveFavorites() {
 
 // FIXED: Now accepts the button element directly instead of event
 function toggleFavorite(button) {
-    console.log('toggleFavorite called with:', button);
+    debugLog('toggleFav: ' + button);
     const card = button.closest('.phrase-card');
-    console.log('Found card:', card);
+    debugLog('Card found: ' + (card ? 'YES' : 'NO'));
     if (!card) {
-        console.error('No card found');
+        debugLog('ERROR: No card');
         return; // Safety check
     }
     
     const cardId = card.dataset.id;
-    console.log('Card ID:', cardId);
+    debugLog('Card ID: ' + cardId);
     if (!cardId) {
-        console.error('No card ID found');
+        debugLog('ERROR: No ID');
         return; // Safety check
     }
     
     if (favorites.has(cardId)) {
-        console.log('Removing from favorites:', cardId);
+        debugLog('Removing: ' + cardId);
         favorites.delete(cardId);
     } else {
-        console.log('Adding to favorites:', cardId);
+        debugLog('Adding: ' + cardId);
         favorites.add(cardId);
     }
     
-    console.log('Current favorites:', Array.from(favorites));
+    debugLog('Total favs: ' + favorites.size);
     saveFavorites();
     updateFavoritesUI();
     
