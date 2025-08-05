@@ -27,7 +27,8 @@ function initializeButtons() {
             const catalanText = card.dataset.catalan;
             speakCatalan(catalanText);
         } else if (e.target.classList.contains('favorite-button')) {
-            toggleFavorite(e);
+            // FIXED: Pass the target element, not the event
+            toggleFavorite(e.target);
         }
     });
 }
@@ -52,15 +53,23 @@ function initializeAllSections() {
 
 // Collects all phrase cards from the DOM and stores them in an array
 function collectAllPhrases() {
-    document.querySelectorAll('.phrase-card').forEach(card => {
-        const literalText = card.querySelector('.literal-text');
-        allPhrases.push({
-            id: card.dataset.id,
-            element: card,
-            catalan: normalizeText(card.querySelector('.catalan-text').textContent),
-            translation: normalizeText(card.querySelector('.translation-text').textContent),
-            literal: literalText ? normalizeText(literalText.textContent) : ''
-        });
+    // FIXED: Only collect from original sections, not cloned ones
+    const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
+    
+    sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.querySelectorAll('.phrase-card').forEach(card => {
+                const literalText = card.querySelector('.literal-text');
+                allPhrases.push({
+                    id: card.dataset.id,
+                    element: card,
+                    catalan: normalizeText(card.querySelector('.catalan-text').textContent),
+                    translation: normalizeText(card.querySelector('.translation-text').textContent),
+                    literal: literalText ? normalizeText(literalText.textContent) : ''
+                });
+            });
+        }
     });
 }
 
@@ -122,17 +131,23 @@ function initializeSearch() {
             return;
         }
 
-        allPhrases.forEach(phrase => {
+        // FIXED: Search through all phrase cards in the DOM, not just the stored array
+        document.querySelectorAll('.phrase-card').forEach(card => {
+            const catalanText = normalizeText(card.querySelector('.catalan-text').textContent);
+            const translationText = normalizeText(card.querySelector('.translation-text').textContent);
+            const literalElement = card.querySelector('.literal-text');
+            const literalText = literalElement ? normalizeText(literalElement.textContent) : '';
+            
             const isMatch = searchTerm === '' || 
-                           phrase.catalan.includes(searchTerm) || 
-                           phrase.translation.includes(searchTerm) ||
-                           phrase.literal.includes(searchTerm);
+                           catalanText.includes(searchTerm) || 
+                           translationText.includes(searchTerm) ||
+                           literalText.includes(searchTerm);
             
             if (isMatch) {
-                phrase.element.style.display = 'flex';
+                card.style.display = 'flex';
                 hasResults = true;
             } else {
-                phrase.element.style.display = 'none';
+                card.style.display = 'none';
             }
         });
         
@@ -165,10 +180,13 @@ function saveFavorites() {
     localStorage.setItem(favoritesKey, JSON.stringify(Array.from(favorites)));
 }
 
-function toggleFavorite(event) {
-    const button = event.currentTarget;
+// FIXED: Now accepts the button element directly instead of event
+function toggleFavorite(button) {
     const card = button.closest('.phrase-card');
+    if (!card) return; // Safety check
+    
     const cardId = card.dataset.id;
+    if (!cardId) return; // Safety check
     
     if (favorites.has(cardId)) {
         favorites.delete(cardId);
@@ -186,8 +204,11 @@ function toggleFavorite(event) {
 }
 
 function updateFavoritesUI() {
+    // Update all cards with matching data-id, including clones
     document.querySelectorAll('.phrase-card').forEach(card => {
         const cardId = card.dataset.id;
+        if (!cardId) return; // Skip cards without ID
+        
         const favoriteButton = card.querySelector('.favorite-button');
         if (favoriteButton) {
             if (favorites.has(cardId)) {
@@ -211,13 +232,26 @@ function renderFavorites() {
     } else {
         noFavoritesMsg.classList.add('hidden');
         
-        allPhrases.forEach(phrase => {
-            if (favorites.has(phrase.id)) {
-                const originalCard = document.querySelector(`.phrase-card[data-id="${phrase.id}"]`);
-                if (originalCard) {
-                    const clonedCard = originalCard.cloneNode(true);
-                    favoritesGrid.appendChild(clonedCard);
+        // FIXED: Look for original cards only, not clones
+        favorites.forEach(favoriteId => {
+            // Find the original card (not in the -all sections)
+            let originalCard = null;
+            const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
+            
+            for (let sectionId of sections) {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const card = section.querySelector(`.phrase-card[data-id="${favoriteId}"]`);
+                    if (card) {
+                        originalCard = card;
+                        break;
+                    }
                 }
+            }
+            
+            if (originalCard) {
+                const clonedCard = originalCard.cloneNode(true);
+                favoritesGrid.appendChild(clonedCard);
             }
         });
     }
