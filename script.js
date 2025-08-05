@@ -4,9 +4,18 @@ let speech;
 const favoritesKey = 'tarragonaFavorites';
 let favorites = new Set();
 
+// IMMEDIATE TEST - This should show as soon as the script loads
+alert('Script is loading!');
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Add debug panel to page
-    addDebugPanel();
+    // Another test to show DOM is ready
+    alert('DOM Content Loaded!');
+    
+    // Add visible debug panel
+    const debugPanel = document.createElement('div');
+    debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;background:yellow;border:2px solid red;padding:10px;z-index:99999;';
+    debugPanel.innerHTML = 'DEBUG PANEL ACTIVE';
+    document.body.appendChild(debugPanel);
     
     initializeAllSections();
     collectAllPhrases();
@@ -22,51 +31,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function addDebugPanel() {
-    const debugPanel = document.createElement('div');
-    debugPanel.id = 'debug-panel';
-    debugPanel.style.cssText = `
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        background: yellow;
-        border: 2px solid black;
-        padding: 10px;
-        max-width: 300px;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 9999;
-        font-size: 12px;
-        font-family: monospace;
-    `;
-    debugPanel.innerHTML = '<strong>DEBUG:</strong><br>';
-    document.body.appendChild(debugPanel);
-}
-
-function debugLog(message) {
-    const panel = document.getElementById('debug-panel');
-    if (panel) {
-        panel.innerHTML += message + '<br>';
-        panel.scrollTop = panel.scrollHeight;
-    }
-}
-
 function initializeButtons() {
-    // Event delegation for audio and favorite buttons
-    document.body.addEventListener('click', function(e) {
-        debugLog('Click on: ' + e.target.className);
-        if (e.target.classList.contains('audio-button')) {
-            const card = e.target.closest('.phrase-card');
-            const catalanText = card.dataset.catalan;
-            speakCatalan(catalanText);
-        } else if (e.target.classList.contains('favorite-button')) {
-            debugLog('Favorite clicked!');
-            e.preventDefault();
-            e.stopPropagation();
-            // FIXED: Pass the target element, not the event
-            toggleFavorite(e.target);
-        }
-    });
+    // Direct event listeners on buttons instead of delegation
+    // Wait a bit for all cards to be created
+    setTimeout(function() {
+        document.querySelectorAll('.favorite-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Visual feedback
+                this.style.background = 'red';
+                
+                const card = this.closest('.phrase-card');
+                if (!card || !card.dataset.id) {
+                    alert('No card or ID found!');
+                    return;
+                }
+                
+                const cardId = card.dataset.id;
+                
+                if (favorites.has(cardId)) {
+                    favorites.delete(cardId);
+                    this.textContent = '☆';
+                    this.classList.remove('favorited');
+                } else {
+                    favorites.add(cardId);
+                    this.textContent = '⭐';
+                    this.classList.add('favorited');
+                }
+                
+                saveFavorites();
+                updateFavoritesUI();
+                
+                // Reset background after a moment
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 200);
+            });
+        });
+        
+        // Audio buttons
+        document.querySelectorAll('.audio-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.phrase-card');
+                const catalanText = card.dataset.catalan;
+                speakCatalan(catalanText);
+            });
+        });
+    }, 500);
 }
 
 // --- UI and View Management ---
@@ -89,7 +102,7 @@ function initializeAllSections() {
 
 // Collects all phrase cards from the DOM and stores them in an array
 function collectAllPhrases() {
-    // FIXED: Only collect from original sections, not cloned ones
+    // Only collect from original sections, not cloned ones
     const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
     
     sections.forEach(sectionId => {
@@ -132,6 +145,9 @@ function initializeNavigation() {
                     card.style.display = 'flex';
                 });
             }
+            
+            // Re-initialize buttons after navigation
+            initializeButtons();
         });
     });
 }
@@ -167,7 +183,7 @@ function initializeSearch() {
             return;
         }
 
-        // FIXED: Search through all phrase cards in the DOM, not just the stored array
+        // Search through all phrase cards in the DOM
         document.querySelectorAll('.phrase-card').forEach(card => {
             const catalanText = normalizeText(card.querySelector('.catalan-text').textContent);
             const translationText = normalizeText(card.querySelector('.translation-text').textContent);
@@ -216,46 +232,11 @@ function saveFavorites() {
     localStorage.setItem(favoritesKey, JSON.stringify(Array.from(favorites)));
 }
 
-// FIXED: Now accepts the button element directly instead of event
-function toggleFavorite(button) {
-    debugLog('toggleFav: ' + button);
-    const card = button.closest('.phrase-card');
-    debugLog('Card found: ' + (card ? 'YES' : 'NO'));
-    if (!card) {
-        debugLog('ERROR: No card');
-        return; // Safety check
-    }
-    
-    const cardId = card.dataset.id;
-    debugLog('Card ID: ' + cardId);
-    if (!cardId) {
-        debugLog('ERROR: No ID');
-        return; // Safety check
-    }
-    
-    if (favorites.has(cardId)) {
-        debugLog('Removing: ' + cardId);
-        favorites.delete(cardId);
-    } else {
-        debugLog('Adding: ' + cardId);
-        favorites.add(cardId);
-    }
-    
-    debugLog('Total favs: ' + favorites.size);
-    saveFavorites();
-    updateFavoritesUI();
-    
-    // If we're on the favorites page, re-render to reflect the change
-    if (document.getElementById('favorites').classList.contains('active')) {
-        renderFavorites();
-    }
-}
-
 function updateFavoritesUI() {
-    // Update all cards with matching data-id, including clones
+    // Update all cards with matching data-id
     document.querySelectorAll('.phrase-card').forEach(card => {
         const cardId = card.dataset.id;
-        if (!cardId) return; // Skip cards without ID
+        if (!cardId) return;
         
         const favoriteButton = card.querySelector('.favorite-button');
         if (favoriteButton) {
@@ -280,9 +261,8 @@ function renderFavorites() {
     } else {
         noFavoritesMsg.classList.add('hidden');
         
-        // FIXED: Look for original cards only, not clones
+        // Look for original cards only
         favorites.forEach(favoriteId => {
-            // Find the original card (not in the -all sections)
             let originalCard = null;
             const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
             
@@ -302,6 +282,9 @@ function renderFavorites() {
                 favoritesGrid.appendChild(clonedCard);
             }
         });
+        
+        // Re-initialize buttons for the favorites view
+        setTimeout(initializeButtons, 100);
     }
 }
 
