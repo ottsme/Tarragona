@@ -1,5 +1,6 @@
 // --- Core Data and Initialization ---
 let allPhrases = [];
+let speech;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeAllSections();
@@ -7,7 +8,36 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFavorites();
     initializeNavigation();
     initializeSearch();
+    initializeButtons();
+    
+    // Check for speech synthesis support
+    if ('speechSynthesis' in window) {
+        speech = window.speechSynthesis;
+        speech.addEventListener('voiceschanged', function() {
+            // Voices are now available.
+        });
+    }
 });
+
+function initializeButtons() {
+    // Event delegation for audio buttons
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('audio-button')) {
+            const card = e.target.closest('.phrase-card');
+            if (card) {
+                const catalanText = card.querySelector('.catalan-text').textContent;
+                speakCatalan(catalanText);
+            }
+        }
+    });
+    
+    // Event delegation for favorite buttons
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('favorite-button')) {
+            toggleFavorite(e);
+        }
+    });
+}
 
 // --- UI and View Management ---
 
@@ -90,7 +120,7 @@ function initializeSearch() {
             document.querySelector('[data-section="all"]').classList.add('active');
             document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
             document.getElementById('all').classList.add('active');
-        } else if (activeNavButton.dataset.section === 'favorites') {
+        } else if (activeNavButton && activeNavButton.dataset.section === 'favorites') {
              // If search is cleared while on favorites, show favorites
             renderFavorites();
             return;
@@ -137,20 +167,17 @@ function loadFavorites() {
         favorites = new Set(storedFavorites);
     }
     
-    // Initialize favorite buttons
+    // Initialize favorite buttons based on local storage
     document.querySelectorAll('.phrase-card').forEach(card => {
         const cardId = card.dataset.id;
         const favoriteButton = card.querySelector('.favorite-button');
         
-        // Update button text and class based on favorites
         if (favorites.has(cardId)) {
             favoriteButton.classList.add('favorited');
             favoriteButton.textContent = '⭐';
         } else {
             favoriteButton.textContent = '☆';
         }
-
-        favoriteButton.addEventListener('click', toggleFavorite);
     });
 }
 
@@ -159,7 +186,6 @@ function saveFavorites() {
 }
 
 function toggleFavorite(event) {
-    event.stopPropagation();
     const button = event.currentTarget;
     const card = button.closest('.phrase-card');
     const cardId = card.dataset.id;
@@ -202,8 +228,6 @@ function renderFavorites() {
                 if (favoriteButton) {
                     favoriteButton.classList.add('favorited');
                     favoriteButton.textContent = '⭐'; // Ensure the icon is a filled star
-                    // Re-add the event listener to the new button
-                    favoriteButton.addEventListener('click', toggleFavorite);
                 }
 
                 favoritesGrid.appendChild(clonedCard);
@@ -216,8 +240,8 @@ function renderFavorites() {
 
 // Speech synthesis function with character normalization
 function speakCatalan(text) {
-    if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
+    if (speech && speech.getVoices().length > 0) {
+        speech.cancel();
         
         const normalizedText = text
             .replace(/'/g, ' ')
@@ -230,8 +254,8 @@ function speakCatalan(text) {
         utterance.pitch = 1;
         utterance.volume = 1;
         
-        speechSynthesis.speak(utterance);
+        speech.speak(utterance);
     } else {
-        alert('Speech synthesis not supported in this browser');
+        alert('Speech synthesis not supported or voices not loaded in this browser.');
     }
 }
