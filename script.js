@@ -141,9 +141,15 @@ function loadFavorites() {
     document.querySelectorAll('.phrase-card').forEach(card => {
         const cardId = card.dataset.id;
         const favoriteButton = card.querySelector('.favorite-button');
+        
+        // Update button text and class based on favorites
         if (favorites.has(cardId)) {
             favoriteButton.classList.add('favorited');
+            favoriteButton.textContent = '⭐';
+        } else {
+            favoriteButton.textContent = '☆';
         }
+
         favoriteButton.addEventListener('click', toggleFavorite);
     });
 }
@@ -161,9 +167,11 @@ function toggleFavorite(event) {
     if (favorites.has(cardId)) {
         favorites.delete(cardId);
         button.classList.remove('favorited');
+        button.textContent = '☆'; // Change to empty star
     } else {
         favorites.add(cardId);
         button.classList.add('favorited');
+        button.textContent = '⭐'; // Change to filled star
     }
     
     saveFavorites();
@@ -193,6 +201,7 @@ function renderFavorites() {
                 const favoriteButton = clonedCard.querySelector('.favorite-button');
                 if (favoriteButton) {
                     favoriteButton.classList.add('favorited');
+                    favoriteButton.textContent = '⭐'; // Ensure the icon is a filled star
                     // Re-add the event listener to the new button
                     favoriteButton.addEventListener('click', toggleFavorite);
                 }
