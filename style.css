@@ -152,8 +152,9 @@ body {
 
 .card-controls {
     display: flex;
-    flex-direction: column; /* Stack controls vertically */
-    gap: 5px;
+    flex-direction: row; /* Arrange controls horizontally */
+    align-items: center;
+    gap: 10px; /* Add gap between icons */
     flex-shrink: 0; /* Prevent controls from shrinking */
 }
 
@@ -207,7 +208,6 @@ body {
 }
 
 .favorite-button.favorited {
-    content: "⭐"; /* Change icon to filled star */
     color: #ffcc02;
 }
 
