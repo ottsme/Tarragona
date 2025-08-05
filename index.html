@@ -4,263 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalan Learning Tool - Tarragona Trip</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .header h1 {
-            color: #d62d20;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-
-        .header p {
-            color: #004c8c;
-            font-size: 1.2em;
-        }
-
-        .search-container {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .search-box {
-            width: 100%;
-            max-width: 500px;
-            padding: 15px 20px;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            outline: none;
-        }
-
-        .navigation {
-            display: flex;
-            overflow-x: auto;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 10px 0;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .navigation::-webkit-scrollbar {
-            display: none;
-        }
-
-        .nav-button {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-            font-weight: 500;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            flex-shrink: 0;
-            min-width: 120px;
-            text-align: center;
-        }
-
-        .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            background: white;
-        }
-
-        .nav-button.active {
-            background: #004c8c;
-            color: white;
-        }
-
-        .content-section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        .section-title {
-            color: #d62d20;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .phrase-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-        }
-
-        .phrase-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .phrase-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-color: #004c8c;
-        }
-
-        .phrase-card.flipped {
-            background: #e3f2fd;
-            border-color: #2196f3;
-        }
-
-        .catalan-text {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #004c8c;
-            margin-bottom: 5px;
-        }
-
-        .translation-text {
-            font-size: 1em;
-            color: #666;
-            display: none;
-        }
-
-        .literal-text {
-            font-size: 0.9em;
-            color: #888;
-            font-style: italic;
-            display: none;
-            margin-top: 5px;
-        }
-
-        .phrase-card.flipped .translation-text,
-        .phrase-card.flipped .literal-text {
-            display: block;
-        }
-
-        .phrase-card.flipped .catalan-text {
-            display: none;
-        }
-
-        .audio-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ffcc02;
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            transition: all 0.3s ease;
-        }
-
-        .audio-button:hover {
-            background: #e6b800;
-            transform: scale(1.1);
-        }
-
-        .subsection {
-            margin-bottom: 30px;
-        }
-
-        .subsection h3 {
-            color: #004c8c;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #ffcc02;
-        }
-
-        .emergency-section {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-        }
-
-        .emergency-section .phrase-card {
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .trip-info {
-            background: rgba(255, 204, 2, 0.1);
-            border: 2px solid #ffcc02;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .all-content-wrapper .content-section {
-            display: block !important;
-            margin-bottom: 40px;
-        }
-
-        .all-content-wrapper .section-title {
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .navigation {
-                grid-template-columns: 1fr;
-            }
-            
-            .phrase-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -272,8 +16,9 @@
             <input type="text" class="search-box" placeholder="Search phrases in Catalan or English..." id="searchBox">
         </div>
 
-        <div class="navigation">
+        <div class="navigation" id="mainNavigation">
             <button class="nav-button active" data-section="all">🏠 All</button>
+            <button class="nav-button" data-section="favorites">⭐ Favorites</button>
             <button class="nav-button" data-section="greetings">👋 Greetings</button>
             <button class="nav-button" data-section="restaurants">🍽️ Food</button>
             <button class="nav-button" data-section="museums">🏛️ Museums</button>
@@ -284,49 +29,59 @@
             <button class="nav-button" data-section="emergency">🆘 Emergency</button>
         </div>
 
-        <!-- All Sections Container -->
         <div class="content-section active" id="all">
             <h2 class="section-title">All Phrases</h2>
             <div class="all-sections-container">
                 <div class="all-content-wrapper">
-                    <!-- All sections will be shown here -->
-                </div>
+                    </div>
             </div>
         </div>
 
-        <!-- Greetings & Social Section -->
+        <div class="content-section" id="favorites">
+            <h2 class="section-title">⭐ Your Favorite Phrases</h2>
+            <div class="phrase-grid" id="favorites-grid">
+                <p id="no-favorites" class="hidden">You have no saved favorites yet.</p>
+            </div>
+        </div>
+
         <div class="content-section" id="greetings">
             <h2 class="section-title">Greetings & Social Interactions</h2>
             
             <div class="subsection">
                 <h3>Daily Greetings</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="bon dia">
+                    <div class="phrase-card" data-catalan="bon dia" data-id="greetings-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">bon dia</div>
                         <div class="translation-text">good morning</div>
                         <button class="audio-button" onclick="speakCatalan('bon dia')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="bona tarda">
+                    <div class="phrase-card" data-catalan="bona tarda" data-id="greetings-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">bona tarda</div>
                         <div class="translation-text">good afternoon</div>
                         <button class="audio-button" onclick="speakCatalan('bona tarda')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="bon vespre">
+                    <div class="phrase-card" data-catalan="bon vespre" data-id="greetings-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">bon vespre</div>
                         <div class="translation-text">good evening</div>
                         <button class="audio-button" onclick="speakCatalan('bon vespre')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="bona nit">
+                    <div class="phrase-card" data-catalan="bona nit" data-id="greetings-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">bona nit</div>
                         <div class="translation-text">good night</div>
                         <button class="audio-button" onclick="speakCatalan('bona nit')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="hola">
+                    <div class="phrase-card" data-catalan="hola" data-id="greetings-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">hola</div>
                         <div class="translation-text">hello</div>
                         <button class="audio-button" onclick="speakCatalan('hola')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="adéu">
+                    <div class="phrase-card" data-catalan="adéu" data-id="greetings-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">adéu</div>
                         <div class="translation-text">goodbye</div>
                         <button class="audio-button" onclick="speakCatalan('adéu')">🔊</button>
@@ -337,34 +92,40 @@
             <div class="subsection">
                 <h3>Polite Expressions</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="si us plau">
+                    <div class="phrase-card" data-catalan="si us plau" data-id="greetings-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">si us plau</div>
                         <div class="translation-text">please</div>
                         <button class="audio-button" onclick="speakCatalan('si us plau')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="gràcies">
+                    <div class="phrase-card" data-catalan="gràcies" data-id="greetings-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">gràcies</div>
                         <div class="translation-text">thank you</div>
                         <button class="audio-button" onclick="speakCatalan('gràcies')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="moltes gràcies">
+                    <div class="phrase-card" data-catalan="moltes gràcies" data-id="greetings-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">moltes gràcies</div>
                         <div class="translation-text">thank you very much</div>
                         <button class="audio-button" onclick="speakCatalan('moltes gràcies')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="de res">
+                    <div class="phrase-card" data-catalan="de res" data-id="greetings-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">de res</div>
                         <div class="translation-text">you're welcome</div>
                         <div class="literal-text">Literal: of nothing</div>
                         <button class="audio-button" onclick="speakCatalan('de res')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="em sap greu">
+                    <div class="phrase-card" data-catalan="em sap greu" data-id="greetings-11">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">em sap greu</div>
                         <div class="translation-text">I'm sorry</div>
                         <div class="literal-text">Literal: it tastes bad to me</div>
                         <button class="audio-button" onclick="speakCatalan('em sap greu')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="disculpi">
+                    <div class="phrase-card" data-catalan="disculpi" data-id="greetings-12">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">disculpi</div>
                         <div class="translation-text">excuse me (polite)</div>
                         <button class="audio-button" onclick="speakCatalan('disculpi')">🔊</button>
@@ -375,22 +136,26 @@
             <div class="subsection">
                 <h3>Basic Communication</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="no entenc">
+                    <div class="phrase-card" data-catalan="no entenc" data-id="greetings-13">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">no entenc</div>
                         <div class="translation-text">I don't understand</div>
                         <button class="audio-button" onclick="speakCatalan('no entenc')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="pot repetir">
+                    <div class="phrase-card" data-catalan="pot repetir" data-id="greetings-14">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">pot repetir</div>
                         <div class="translation-text">can you repeat</div>
                         <button class="audio-button" onclick="speakCatalan('pot repetir')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="parlo una mica de català">
+                    <div class="phrase-card" data-catalan="parlo una mica de català" data-id="greetings-15">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">parlo una mica de català</div>
                         <div class="translation-text">I speak a little Catalan</div>
                         <button class="audio-button" onclick="speakCatalan('parlo una mica de català')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="sóc d'Estònia">
+                    <div class="phrase-card" data-catalan="sóc d'Estònia" data-id="greetings-16">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">sóc d'Estònia</div>
                         <div class="translation-text">I'm from Estonia</div>
                         <button class="audio-button" onclick="speakCatalan('sóc d Estònia')">🔊</button>
@@ -399,39 +164,44 @@
             </div>
         </div>
 
-        <!-- Restaurants & Food Section -->
         <div class="content-section" id="restaurants">
             <h2 class="section-title">Restaurants & Food</h2>
             
             <div class="subsection">
                 <h3>Restaurant Basics</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="necessitem una taula gran">
+                    <div class="phrase-card" data-catalan="necessitem una taula gran" data-id="restaurants-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem una taula gran</div>
                         <div class="translation-text">we need a big table</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem una taula gran')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="som tretze persones">
+                    <div class="phrase-card" data-catalan="som tretze persones" data-id="restaurants-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">som tretze persones</div>
                         <div class="translation-text">we are thirteen people</div>
                         <button class="audio-button" onclick="speakCatalan('som tretze persones')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="podem seure tots junts?">
+                    <div class="phrase-card" data-catalan="podem seure tots junts?" data-id="restaurants-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">podem seure tots junts?</div>
                         <div class="translation-text">can we all sit together?</div>
                         <button class="audio-button" onclick="speakCatalan('podem seure tots junts?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="necessitem dues taules">
+                    <div class="phrase-card" data-catalan="necessitem dues taules" data-id="restaurants-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem dues taules</div>
                         <div class="translation-text">we need two tables</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem dues taules')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="taules una al costat de l'altra">
+                    <div class="phrase-card" data-catalan="taules una al costat de l'altra" data-id="restaurants-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">taules una al costat de l'altra</div>
                         <div class="translation-text">tables next to each other</div>
                         <button class="audio-button" onclick="speakCatalan('taules una al costat de l altra')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="tenim una reserva">
+                    <div class="phrase-card" data-catalan="tenim una reserva" data-id="restaurants-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">tenim una reserva</div>
                         <div class="translation-text">we have a reservation</div>
                         <button class="audio-button" onclick="speakCatalan('tenim una reserva')">🔊</button>
@@ -442,32 +212,38 @@
             <div class="subsection">
                 <h3>Ordering Food</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="la carta, si us plau">
+                    <div class="phrase-card" data-catalan="la carta, si us plau" data-id="restaurants-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">la carta, si us plau</div>
                         <div class="translation-text">the menu, please</div>
                         <button class="audio-button" onclick="speakCatalan('la carta, si us plau')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="què em recomana">
+                    <div class="phrase-card" data-catalan="què em recomana" data-id="restaurants-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">què em recomana</div>
                         <div class="translation-text">what do you recommend</div>
                         <button class="audio-button" onclick="speakCatalan('què em recomana')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="voldria provar">
+                    <div class="phrase-card" data-catalan="voldria provar" data-id="restaurants-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">voldria provar</div>
                         <div class="translation-text">I would like to try</div>
                         <button class="audio-button" onclick="speakCatalan('voldria provar')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="per començar">
+                    <div class="phrase-card" data-catalan="per començar" data-id="restaurants-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">per començar</div>
                         <div class="translation-text">to start</div>
                         <button class="audio-button" onclick="speakCatalan('per començar')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="de segon">
+                    <div class="phrase-card" data-catalan="de segon" data-id="restaurants-11">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">de segon</div>
                         <div class="translation-text">for the main course</div>
                         <button class="audio-button" onclick="speakCatalan('de segon')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="el compte, si us plau">
+                    <div class="phrase-card" data-catalan="el compte, si us plau" data-id="restaurants-12">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">el compte, si us plau</div>
                         <div class="translation-text">the bill, please</div>
                         <button class="audio-button" onclick="speakCatalan('el compte, si us plau')">🔊</button>
@@ -478,32 +254,38 @@
             <div class="subsection">
                 <h3>Food & Drinks</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="pa amb tomàquet">
+                    <div class="phrase-card" data-catalan="pa amb tomàquet" data-id="restaurants-13">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">pa amb tomàquet</div>
                         <div class="translation-text">bread with tomato (Catalan classic)</div>
                         <button class="audio-button" onclick="speakCatalan('pa amb tomàquet')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="paella">
+                    <div class="phrase-card" data-catalan="paella" data-id="restaurants-14">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">paella</div>
                         <div class="translation-text">paella</div>
                         <button class="audio-button" onclick="speakCatalan('paella')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="aigua sense gas">
+                    <div class="phrase-card" data-catalan="aigua sense gas" data-id="restaurants-15">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">aigua sense gas</div>
                         <div class="translation-text">still water</div>
                         <button class="audio-button" onclick="speakCatalan('aigua sense gas')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="vi de la casa">
+                    <div class="phrase-card" data-catalan="vi de la casa" data-id="restaurants-16">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">vi de la casa</div>
                         <div class="translation-text">house wine</div>
                         <button class="audio-button" onclick="speakCatalan('vi de la casa')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="un cafè amb llet">
+                    <div class="phrase-card" data-catalan="un cafè amb llet" data-id="restaurants-17">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">un cafè amb llet</div>
                         <div class="translation-text">coffee with milk</div>
                         <button class="audio-button" onclick="speakCatalan('un cafè amb llet')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="tot estava boníssim">
+                    <div class="phrase-card" data-catalan="tot estava boníssim" data-id="restaurants-18">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">tot estava boníssim</div>
                         <div class="translation-text">everything was delicious</div>
                         <button class="audio-button" onclick="speakCatalan('tot estava boníssim')">🔊</button>
@@ -512,39 +294,44 @@
             </div>
         </div>
 
-        <!-- Museums & Sightseeing Section -->
         <div class="content-section" id="museums">
             <h2 class="section-title">Museums & Sightseeing</h2>
             
             <div class="subsection">
                 <h3>Tickets & Tours</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="necessitem tretze entrades">
+                    <div class="phrase-card" data-catalan="necessitem tretze entrades" data-id="museums-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem tretze entrades</div>
                         <div class="translation-text">we need thirteen tickets</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem tretze entrades')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="hi ha descompte per a grups">
+                    <div class="phrase-card" data-catalan="hi ha descompte per a grups" data-id="museums-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">hi ha descompte per a grups</div>
                         <div class="translation-text">is there a group discount</div>
                         <button class="audio-button" onclick="speakCatalan('hi ha descompte per a grups')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="la visita guiada">
+                    <div class="phrase-card" data-catalan="la visita guiada" data-id="museums-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">la visita guiada</div>
                         <div class="translation-text">the guided tour</div>
                         <button class="audio-button" onclick="speakCatalan('la visita guiada')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="a quina hora és la visita">
+                    <div class="phrase-card" data-catalan="a quina hora és la visita" data-id="museums-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">a quina hora és la visita</div>
                         <div class="translation-text">what time is the visit</div>
                         <button class="audio-button" onclick="speakCatalan('a quina hora és la visita')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="l'audioguia és en anglès">
+                    <div class="phrase-card" data-catalan="l'audioguia és en anglès" data-id="museums-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">l'audioguia és en anglès</div>
                         <div class="translation-text">is the audio guide in English</div>
                         <button class="audio-button" onclick="speakCatalan('l audioguia és en anglès')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="perfecte, agafem la de les tres">
+                    <div class="phrase-card" data-catalan="perfecte, agafem la de les tres" data-id="museums-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">perfecte, agafem la de les tres</div>
                         <div class="translation-text">perfect, we'll take the three o'clock one</div>
                         <button class="audio-button" onclick="speakCatalan('perfecte, agafem la de les tres')">🔊</button>
@@ -555,22 +342,26 @@
             <div class="subsection">
                 <h3>Cultural Interest</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="estem molt interessats en la cultura catalana">
+                    <div class="phrase-card" data-catalan="estem molt interessats en la cultura catalana" data-id="museums-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">estem molt interessats en la cultura catalana</div>
                         <div class="translation-text">we're very interested in Catalan culture</div>
                         <button class="audio-button" onclick="speakCatalan('estem molt interessats en la cultura catalana')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="quina és la història d'aquest lloc">
+                    <div class="phrase-card" data-catalan="quina és la història d'aquest lloc" data-id="museums-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">quina és la història d'aquest lloc</div>
                         <div class="translation-text">what's the history of this place</div>
                         <button class="audio-button" onclick="speakCatalan('quina és la història d aquest lloc')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="quin lloc tan bonic">
+                    <div class="phrase-card" data-catalan="quin lloc tan bonic" data-id="museums-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">quin lloc tan bonic</div>
                         <div class="translation-text">what a beautiful place</div>
                         <button class="audio-button" onclick="speakCatalan('quin lloc tan bonic')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="molt interessant">
+                    <div class="phrase-card" data-catalan="molt interessant" data-id="museums-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">molt interessant</div>
                         <div class="translation-text">very interesting</div>
                         <button class="audio-button" onclick="speakCatalan('molt interessant')">🔊</button>
@@ -579,29 +370,32 @@
             </div>
         </div>
 
-        <!-- Shopping & Markets Section -->
         <div class="content-section" id="shopping">
             <h2 class="section-title">Shopping & Markets</h2>
             
             <div class="subsection">
                 <h3>Basic Shopping</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="quan costa">
+                    <div class="phrase-card" data-catalan="quan costa" data-id="shopping-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">quan costa</div>
                         <div class="translation-text">how much does it cost</div>
                         <button class="audio-button" onclick="speakCatalan('quan costa')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="tenen">
+                    <div class="phrase-card" data-catalan="tenen" data-id="shopping-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">tenen</div>
                         <div class="translation-text">do you have</div>
                         <button class="audio-button" onclick="speakCatalan('tenen')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="puc pagar amb targeta">
+                    <div class="phrase-card" data-catalan="puc pagar amb targeta" data-id="shopping-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">puc pagar amb targeta</div>
                         <div class="translation-text">can I pay by card</div>
                         <button class="audio-button" onclick="speakCatalan('puc pagar amb targeta')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="està bé">
+                    <div class="phrase-card" data-catalan="està bé" data-id="shopping-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">està bé</div>
                         <div class="translation-text">that's fine/OK</div>
                         <button class="audio-button" onclick="speakCatalan('està bé')">🔊</button>
@@ -612,22 +406,26 @@
             <div class="subsection">
                 <h3>Market Shopping</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="un quilo">
+                    <div class="phrase-card" data-catalan="un quilo" data-id="shopping-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">un quilo</div>
                         <div class="translation-text">one kilo</div>
                         <button class="audio-button" onclick="speakCatalan('un quilo')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="mig quilo">
+                    <div class="phrase-card" data-catalan="mig quilo" data-id="shopping-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">mig quilo</div>
                         <div class="translation-text">half kilo</div>
                         <button class="audio-button" onclick="speakCatalan('mig quilo')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="aquestes fruites">
+                    <div class="phrase-card" data-catalan="aquestes fruites" data-id="shopping-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">aquestes fruites</div>
                         <div class="translation-text">these fruits</div>
                         <button class="audio-button" onclick="speakCatalan('aquestes fruites')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="vols provar">
+                    <div class="phrase-card" data-catalan="vols provar" data-id="shopping-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">vols provar</div>
                         <div class="translation-text">want to try</div>
                         <button class="audio-button" onclick="speakCatalan('vols provar')">🔊</button>
@@ -638,22 +436,26 @@
             <div class="subsection">
                 <h3>Group Shopping</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="necessitem molt més">
+                    <div class="phrase-card" data-catalan="necessitem molt més" data-id="shopping-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem molt més</div>
                         <div class="translation-text">we need much more</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem molt més')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="per a tretze persones">
+                    <div class="phrase-card" data-catalan="per a tretze persones" data-id="shopping-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">per a tretze persones</div>
                         <div class="translation-text">for thirteen people</div>
                         <button class="audio-button" onclick="speakCatalan('per a tretze persones')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="és per un grup gran">
+                    <div class="phrase-card" data-catalan="és per un grup gran" data-id="shopping-11">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">és per un grup gran</div>
                         <div class="translation-text">it's for a big group</div>
                         <button class="audio-button" onclick="speakCatalan('és per un grup gran')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="teniu prou per a tots">
+                    <div class="phrase-card" data-catalan="teniu prou per a tots" data-id="shopping-12">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">teniu prou per a tots</div>
                         <div class="translation-text">do you have enough for everyone</div>
                         <button class="audio-button" onclick="speakCatalan('teniu prou per a tots')">🔊</button>
@@ -662,39 +464,44 @@
             </div>
         </div>
 
-        <!-- Transportation Section -->
         <div class="content-section" id="transport">
             <h2 class="section-title">Transportation</h2>
             
             <div class="subsection">
                 <h3>Getting Around</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="on és">
+                    <div class="phrase-card" data-catalan="on és" data-id="transport-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">on és</div>
                         <div class="translation-text">where is</div>
                         <button class="audio-button" onclick="speakCatalan('on és')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="com puc anar a">
+                    <div class="phrase-card" data-catalan="com puc anar a" data-id="transport-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">com puc anar a</div>
                         <div class="translation-text">how can I go to</div>
                         <button class="audio-button" onclick="speakCatalan('com puc anar a')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="està lluny">
+                    <div class="phrase-card" data-catalan="està lluny" data-id="transport-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">està lluny</div>
                         <div class="translation-text">is it far</div>
                         <button class="audio-button" onclick="speakCatalan('està lluny')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="està a prop">
+                    <div class="phrase-card" data-catalan="està a prop" data-id="transport-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">està a prop</div>
                         <div class="translation-text">it's nearby</div>
                         <button class="audio-button" onclick="speakCatalan('està a prop')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="tot recte">
+                    <div class="phrase-card" data-catalan="tot recte" data-id="transport-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">tot recte</div>
                         <div class="translation-text">straight ahead</div>
                         <button class="audio-button" onclick="speakCatalan('tot recte')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="a l'esquerra">
+                    <div class="phrase-card" data-catalan="a l'esquerra" data-id="transport-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">a l'esquerra</div>
                         <div class="translation-text">to the left</div>
                         <button class="audio-button" onclick="speakCatalan('a l esquerra')">🔊</button>
@@ -705,17 +512,20 @@
             <div class="subsection">
                 <h3>Public Transport</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="quina línia del metro">
+                    <div class="phrase-card" data-catalan="quina línia del metro" data-id="transport-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">quina línia del metro</div>
                         <div class="translation-text">which metro line</div>
                         <button class="audio-button" onclick="speakCatalan('quina línia del metro')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="on és l'estació més propera">
+                    <div class="phrase-card" data-catalan="on és l'estació més propera" data-id="transport-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">on és l'estació més propera</div>
                         <div class="translation-text">where's the nearest station</div>
                         <button class="audio-button" onclick="speakCatalan('on és l estació més propera')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="cabem tots en un autobús?">
+                    <div class="phrase-card" data-catalan="cabem tots en un autobús?" data-id="transport-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">cabem tots en un autobús?</div>
                         <div class="translation-text">do we all fit in one bus?</div>
                         <button class="audio-button" onclick="speakCatalan('cabem tots en un autobús?')">🔊</button>
@@ -726,22 +536,26 @@
             <div class="subsection">
                 <h3>Car Rental & Parking</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="necessitem dos cotxes">
+                    <div class="phrase-card" data-catalan="necessitem dos cotxes" data-id="transport-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem dos cotxes</div>
                         <div class="translation-text">we need two cars</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem dos cotxes')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="on puc aparcar">
+                    <div class="phrase-card" data-catalan="on puc aparcar" data-id="transport-11">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">on puc aparcar</div>
                         <div class="translation-text">where can I park</div>
                         <button class="audio-button" onclick="speakCatalan('on puc aparcar')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="quan costa per hora">
+                    <div class="phrase-card" data-catalan="quan costa per hora" data-id="transport-12">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">quan costa per hora</div>
                         <div class="translation-text">how much per hour</div>
                         <button class="audio-button" onclick="speakCatalan('quan costa per hora')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="el GPS funciona en anglès">
+                    <div class="phrase-card" data-catalan="el GPS funciona en anglès" data-id="transport-13">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">el GPS funciona en anglès</div>
                         <div class="translation-text">does the GPS work in English</div>
                         <button class="audio-button" onclick="speakCatalan('el GPS funciona en anglès')">🔊</button>
@@ -750,7 +564,6 @@
             </div>
         </div>
 
-        <!-- Group Management Section -->
         <div class="content-section" id="group">
             <h2 class="section-title">Group Management (13 People)</h2>
             
@@ -761,17 +574,20 @@
             <div class="subsection">
                 <h3>Group Size Communication</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="som tretze persones">
+                    <div class="phrase-card" data-catalan="som tretze persones" data-id="group-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">som tretze persones</div>
                         <div class="translation-text">we are thirteen people</div>
                         <button class="audio-button" onclick="speakCatalan('som tretze persones')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="som un grup de tres famílies">
+                    <div class="phrase-card" data-catalan="som un grup de tres famílies" data-id="group-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">som un grup de tres famílies</div>
                         <div class="translation-text">we are a group of three families</div>
                         <button class="audio-button" onclick="speakCatalan('som un grup de tres famílies')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="teniu lloc per tretze persones?">
+                    <div class="phrase-card" data-catalan="teniu lloc per tretze persones?" data-id="group-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">teniu lloc per tretze persones?</div>
                         <div class="translation-text">do you have space for thirteen people?</div>
                         <button class="audio-button" onclick="speakCatalan('teniu lloc per tretze persones?')">🔊</button>
@@ -782,22 +598,26 @@
             <div class="subsection">
                 <h3>Splitting Groups</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="podem dividir-nos en dos grups">
+                    <div class="phrase-card" data-catalan="podem dividir-nos en dos grups" data-id="group-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">podem dividir-nos en dos grups</div>
                         <div class="translation-text">we can split into two groups</div>
                         <button class="audio-button" onclick="speakCatalan('podem dividir-nos en dos grups')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="set persones aquí i sis allà">
+                    <div class="phrase-card" data-catalan="set persones aquí i sis allà" data-id="group-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">set persones aquí i sis allà</div>
                         <div class="translation-text">seven people here and six there</div>
                         <button class="audio-button" onclick="speakCatalan('set persones aquí i sis allà')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="el primer grup va primer">
+                    <div class="phrase-card" data-catalan="el primer grup va primer" data-id="group-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">el primer grup va primer</div>
                         <div class="translation-text">the first group goes first</div>
                         <button class="audio-button" onclick="speakCatalan('el primer grup va primer')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="ens dividim?">
+                    <div class="phrase-card" data-catalan="ens dividim?" data-id="group-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">ens dividim?</div>
                         <div class="translation-text">shall we split up?</div>
                         <button class="audio-button" onclick="speakCatalan('ens dividim?')">🔊</button>
@@ -808,22 +628,26 @@
             <div class="subsection">
                 <h3>Coordination</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="on ens trobem després?">
+                    <div class="phrase-card" data-catalan="on ens trobem després?" data-id="group-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">on ens trobem després?</div>
                         <div class="translation-text">where do we meet after?</div>
                         <button class="audio-button" onclick="speakCatalan('on ens trobem després?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="ens trobem a les">
+                    <div class="phrase-card" data-catalan="ens trobem a les" data-id="group-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">ens trobem a les</div>
                         <div class="translation-text">we'll meet at</div>
                         <button class="audio-button" onclick="speakCatalan('ens trobem a les')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="espereu aquí, jo vaig a preguntar">
+                    <div class="phrase-card" data-catalan="espereu aquí, jo vaig a preguntar" data-id="group-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">espereu aquí, jo vaig a preguntar</div>
                         <div class="translation-text">wait here, I'll go ask</div>
                         <button class="audio-button" onclick="speakCatalan('espereu aquí, jo vaig a preguntar')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="cada família paga el seu">
+                    <div class="phrase-card" data-catalan="cada família paga el seu" data-id="group-11">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">cada família paga el seu</div>
                         <div class="translation-text">each family pays their own</div>
                         <button class="audio-button" onclick="speakCatalan('cada família paga el seu')">🔊</button>
@@ -834,17 +658,20 @@
             <div class="subsection">
                 <h3>Bookings & Reservations</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="podem fer dues reserves seguides?">
+                    <div class="phrase-card" data-catalan="podem fer dues reserves seguides?" data-id="group-12">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">podem fer dues reserves seguides?</div>
                         <div class="translation-text">can we make two consecutive reservations?</div>
                         <button class="audio-button" onclick="speakCatalan('podem fer dues reserves seguides?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="a la mateixa hora?">
+                    <div class="phrase-card" data-catalan="a la mateixa hora?" data-id="group-13">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">a la mateixa hora?</div>
                         <div class="translation-text">at the same time?</div>
                         <button class="audio-button" onclick="speakCatalan('a la mateixa hora?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="quan temps d'espera per una taula gran?">
+                    <div class="phrase-card" data-catalan="quan temps d'espera per una taula gran?" data-id="group-14">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">quan temps d'espera per una taula gran?</div>
                         <div class="translation-text">how long wait for a big table?</div>
                         <button class="audio-button" onclick="speakCatalan('quan temps d espera per una taula gran')">🔊</button>
@@ -853,24 +680,26 @@
             </div>
         </div>
 
-        <!-- Villa & Accommodation Section -->
         <div class="content-section" id="accommodation">
             <h2 class="section-title">Villa & Accommodation</h2>
             
             <div class="subsection">
                 <h3>Villa Information</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="estem allotjats en una vil·la">
+                    <div class="phrase-card" data-catalan="estem allotjats en una vil·la" data-id="accommodation-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">estem allotjats en una vil·la</div>
                         <div class="translation-text">we're staying in a villa</div>
                         <button class="audio-button" onclick="speakCatalan('estem allotjats en una vil·la')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="hem llogat una casa">
+                    <div class="phrase-card" data-catalan="hem llogat una casa" data-id="accommodation-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">hem llogat una casa</div>
                         <div class="translation-text">we've rented a house</div>
                         <button class="audio-button" onclick="speakCatalan('hem llogat una casa')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="som a l'adreça">
+                    <div class="phrase-card" data-catalan="som a l'adreça" data-id="accommodation-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">som a l'adreça</div>
                         <div class="translation-text">we're at the address</div>
                         <button class="audio-button" onclick="speakCatalan('som a l adreça')">🔊</button>
@@ -881,32 +710,38 @@
             <div class="subsection">
                 <h3>Practical Needs</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="podem deixar els cotxes aquí?">
+                    <div class="phrase-card" data-catalan="podem deixar els cotxes aquí?" data-id="accommodation-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">podem deixar els cotxes aquí?</div>
                         <div class="translation-text">can we leave the cars here?</div>
                         <button class="audio-button" onclick="speakCatalan('podem deixar els cotxes aquí?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="necessitem ombra">
+                    <div class="phrase-card" data-catalan="necessitem ombra" data-id="accommodation-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem ombra</div>
                         <div class="translation-text">we need shade</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem ombra')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="hi ha un lloc per seure?">
+                    <div class="phrase-card" data-catalan="hi ha un lloc per seure?" data-id="accommodation-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">hi ha un lloc per seure?</div>
                         <div class="translation-text">is there a place to sit?</div>
                         <button class="audio-button" onclick="speakCatalan('hi ha un lloc per seure?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="hi ha ascensor?">
+                    <div class="phrase-card" data-catalan="hi ha ascensor?" data-id="accommodation-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">hi ha ascensor?</div>
                         <div class="translation-text">is there an elevator?</div>
                         <button class="audio-button" onclick="speakCatalan('hi ha ascensor?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="podem anar més a poc a poc?">
+                    <div class="phrase-card" data-catalan="podem anar més a poc a poc?" data-id="accommodation-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">podem anar més a poc a poc?</div>
                         <div class="translation-text">can we go more slowly?</div>
                         <button class="audio-button" onclick="speakCatalan('podem anar més a poc a poc?')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="necessitem descansar">
+                    <div class="phrase-card" data-catalan="necessitem descansar" data-id="accommodation-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessitem descansar</div>
                         <div class="translation-text">we need to rest</div>
                         <button class="audio-button" onclick="speakCatalan('necessitem descansar')">🔊</button>
@@ -915,24 +750,26 @@
             </div>
         </div>
 
-        <!-- Emergency Section -->
         <div class="content-section emergency-section" id="emergency">
             <h2 class="section-title">Emergency Phrases</h2>
             
             <div class="subsection">
                 <h3>Getting Help</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="necessito ajuda">
+                    <div class="phrase-card" data-catalan="necessito ajuda" data-id="emergency-1">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessito ajuda</div>
                         <div class="translation-text">I need help</div>
                         <button class="audio-button" onclick="speakCatalan('necessito ajuda')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="és una emergència">
+                    <div class="phrase-card" data-catalan="és una emergència" data-id="emergency-2">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">és una emergència</div>
                         <div class="translation-text">it's an emergency</div>
                         <button class="audio-button" onclick="speakCatalan('és una emergència')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="trucant la policia">
+                    <div class="phrase-card" data-catalan="trucant la policia" data-id="emergency-3">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">trucant la policia</div>
                         <div class="translation-text">calling the police</div>
                         <button class="audio-button" onclick="speakCatalan('trucant la policia')">🔊</button>
@@ -943,27 +780,32 @@
             <div class="subsection">
                 <h3>Lost Situations</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="estic perdut">
+                    <div class="phrase-card" data-catalan="estic perdut" data-id="emergency-4">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">estic perdut</div>
                         <div class="translation-text">I'm lost (male)</div>
                         <button class="audio-button" onclick="speakCatalan('estic perdut')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="estic perduda">
+                    <div class="phrase-card" data-catalan="estic perduda" data-id="emergency-5">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">estic perduda</div>
                         <div class="translation-text">I'm lost (female)</div>
                         <button class="audio-button" onclick="speakCatalan('estic perduda')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="he perdut el meu grup">
+                    <div class="phrase-card" data-catalan="he perdut el meu grup" data-id="emergency-6">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">he perdut el meu grup</div>
                         <div class="translation-text">I've lost my group</div>
                         <button class="audio-button" onclick="speakCatalan('he perdut el meu grup')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="busco la meva família">
+                    <div class="phrase-card" data-catalan="busco la meva família" data-id="emergency-7">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">busco la meva família</div>
                         <div class="translation-text">I'm looking for my family</div>
                         <button class="audio-button" onclick="speakCatalan('busco la meva família')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="som tretze, falta algú">
+                    <div class="phrase-card" data-catalan="som tretze, falta algú" data-id="emergency-8">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">som tretze, falta algú</div>
                         <div class="translation-text">we are thirteen, someone is missing</div>
                         <button class="audio-button" onclick="speakCatalan('som tretze, falta algú')">🔊</button>
@@ -974,12 +816,14 @@
             <div class="subsection">
                 <h3>Medical</h3>
                 <div class="phrase-grid">
-                    <div class="phrase-card" data-catalan="on és l'hospital">
+                    <div class="phrase-card" data-catalan="on és l'hospital" data-id="emergency-9">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">on és l'hospital</div>
                         <div class="translation-text">where is the hospital</div>
                         <button class="audio-button" onclick="speakCatalan('on és l hospital')">🔊</button>
                     </div>
-                    <div class="phrase-card" data-catalan="necessito un metge">
+                    <div class="phrase-card" data-catalan="necessito un metge" data-id="emergency-10">
+                        <button class="favorite-button">⭐</button>
                         <div class="catalan-text">necessito un metge</div>
                         <div class="translation-text">I need a doctor</div>
                         <button class="audio-button" onclick="speakCatalan('necessito un metge')">🔊</button>
@@ -988,213 +832,7 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Normalize text for search and speech - removes accents, apostrophes, converts to lowercase
-        function normalizeText(text) {
-            return text
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '') // Remove accents
-                .replace(/[''`]/g, ' ') // Replace all types of apostrophes with spaces
-                .replace(/[^\w\s]/g, ' ') // Replace punctuation with spaces
-                .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-                .trim();
-        }
-
-        // Speech synthesis function with character normalization
-        function speakCatalan(text) {
-            if ('speechSynthesis' in window) {
-                // Cancel any ongoing speech
-                speechSynthesis.cancel();
-                
-                // Normalize text by removing problematic characters but keep it readable
-                const normalizedText = text
-                    .replace(/'/g, ' ')  // Replace apostrophes with spaces
-                    .replace(/'/g, ' ')  // Replace smart apostrophes
-                    .replace(/'/g, ' ')  // Replace curly apostrophes
-                    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-                    .trim();
-                
-                const utterance = new SpeechSynthesisUtterance(normalizedText);
-                utterance.lang = 'ca-ES';
-                utterance.rate = 0.8; // Slightly slower for learning
-                utterance.pitch = 1;
-                utterance.volume = 1;
-                
-                // Wait for voices to be loaded
-                if (speechSynthesis.getVoices().length === 0) {
-                    speechSynthesis.addEventListener('voiceschanged', function() {
-                        speechSynthesis.speak(utterance);
-                    }, { once: true });
-                } else {
-                    speechSynthesis.speak(utterance);
-                }
-            } else {
-                alert('Speech synthesis not supported in this browser');
-            }
-        }
-
-        // Initialize "All" section by showing all other sections
-        function initializeAllSections() {
-            const allWrapper = document.querySelector('#all .all-content-wrapper');
-            const sections = ['greetings', 'restaurants', 'museums', 'shopping', 'transport', 'group', 'accommodation', 'emergency'];
-            
-            sections.forEach(sectionId => {
-                const originalSection = document.getElementById(sectionId);
-                if (originalSection) {
-                    const clonedSection = originalSection.cloneNode(true);
-                    clonedSection.id = sectionId + '-all';
-                    allWrapper.appendChild(clonedSection);
-                }
-            });
-            
-            // Re-initialize event listeners for cloned content
-            initializePhraseCards();
-            initializeAudioButtons();
-        }
-
-        // Navigation functionality with smooth scrolling
-        function initializeNavigation() {
-            document.querySelectorAll('.nav-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons and sections
-                    document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    // Show corresponding section
-                    const sectionId = this.getAttribute('data-section');
-                    const targetSection = document.getElementById(sectionId);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
-                        
-                        // Smooth scroll to content (skip for 'all' section)
-                        if (sectionId !== 'all') {
-                            setTimeout(() => {
-                                targetSection.scrollIntoView({ 
-                                    behavior: 'smooth', 
-                                    block: 'start' 
-                                });
-                            }, 100);
-                        } else {
-                            // For 'all' section, scroll to top
-                            setTimeout(() => {
-                                window.scrollTo({ 
-                                    top: 0, 
-                                    behavior: 'smooth' 
-                                });
-                            }, 100);
-                        }
-                    }
-                });
-            });
-        }
-
-        // Phrase card flip functionality
-        function initializePhraseCards() {
-            document.querySelectorAll('.phrase-card').forEach(card => {
-                // Remove existing listeners to prevent duplicates
-                const newCard = card.cloneNode(true);
-                card.parentNode.replaceChild(newCard, card);
-                
-                newCard.addEventListener('click', function(e) {
-                    // Don't flip if audio button was clicked
-                    if (e.target.classList.contains('audio-button')) {
-                        return;
-                    }
-                    this.classList.toggle('flipped');
-                    
-                    // Auto-flip back after 5 seconds
-                    setTimeout(() => {
-                        this.classList.remove('flipped');
-                    }, 5000);
-                });
-            });
-        }
-
-        // Search functionality with improved normalization
-        function initializeSearch() {
-            const searchBox = document.getElementById('searchBox');
-            searchBox.addEventListener('input', function() {
-                const searchTerm = normalizeText(this.value);
-                const allCards = document.querySelectorAll('.phrase-card');
-                let hasResults = false;
-                
-                // If searching, automatically switch to "All" view
-                if (searchTerm.length > 0) {
-                    document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-                    document.querySelector('[data-section="all"]').classList.add('active');
-                    document.getElementById('all').classList.add('active');
-                }
-                
-                allCards.forEach(card => {
-                    const catalanText = card.querySelector('.catalan-text');
-                    const translationText = card.querySelector('.translation-text');
-                    const literalText = card.querySelector('.literal-text');
-                    
-                    const catalanContent = catalanText ? normalizeText(catalanText.textContent) : '';
-                    const translationContent = translationText ? normalizeText(translationText.textContent) : '';
-                    const literalContent = literalText ? normalizeText(literalText.textContent) : '';
-                    
-                    const isMatch = searchTerm === '' || 
-                                   catalanContent.includes(searchTerm) || 
-                                   translationContent.includes(searchTerm) || 
-                                   literalContent.includes(searchTerm);
-                    
-                    if (isMatch) {
-                        card.style.display = 'flex';
-                        hasResults = true;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-                
-                // Show/hide no results message
-                let noResultsMsg = document.querySelector('.no-results-message');
-                if (searchTerm.length > 0 && !hasResults) {
-                    if (!noResultsMsg) {
-                        noResultsMsg = document.createElement('div');
-                        noResultsMsg.className = 'no-results-message';
-                        noResultsMsg.style.cssText = 'text-align: center; padding: 20px; color: #666; font-style: italic;';
-                        noResultsMsg.textContent = 'No phrases found for your search.';
-                        document.querySelector('#all .all-content-wrapper').appendChild(noResultsMsg);
-                    }
-                    noResultsMsg.style.display = 'block';
-                } else if (noResultsMsg) {
-                    noResultsMsg.style.display = 'none';
-                }
-            });
-        }
-
-        // Initialize audio buttons
-        function initializeAudioButtons() {
-            document.querySelectorAll('.audio-button').forEach(button => {
-                // Remove existing listeners to prevent duplicates
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-                
-                newButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                });
-            });
-        }
-
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit for all content to be rendered
-            setTimeout(() => {
-                initializeAllSections();
-                initializeNavigation();
-                initializePhraseCards();
-                initializeAudioButtons();
-                initializeSearch();
-            }, 100);
-        });
-    </script>
+    
+    <script src="script.js"></script>
 </body>
 </html>
-                
